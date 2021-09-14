@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<windowclass name="ISC-results-window">
+		<frame>utilitybox</frame>
+		<placement><size width="480" height="400" /></placement>
+		<sizelimits>
+			<minimum width="480" height="400" />
+			<dynamic />
+		</sizelimits>
+		<playercontrol />
+		<nodelete />
+
+		<sheetdata>
+			<windowtitlebar name="title">
+				<resource>ISC-results-window-title</resource>
+			</windowtitlebar>
+
+			<anchor_title_utilitybox name="contentanchor" />
+
+			<genericcontrol name="ISC-results-frame">
+				<anchored to="contentanchor">
+					<top anchor="bottom" offset="20" />
+					<left offset="10" />
+					<right offset="-10" />
+					<bottom parent="" offset="-80" />
+				</anchored>
+				<frame name="groupbox" offset="15,15,15,15" />
+
+				<disabled />
+			</genericcontrol>
+
+			<genericcontrol name="ISC-results-separator">
+				<anchored to="ISC-results-frame">
+					<top offset="27" />
+					<left />
+					<right />
+				</anchored>
+				<frame name="headersimple" />
+				<disabled />
+			</genericcontrol>
+
+			<genericcontrol name="right-anchor">
+				<anchored to="contentanchor" position="belowright" offset="0,20" width="0" />
+				<invisible />
+			</genericcontrol>
+			
+			<genericcontrol name="lower-right-anchor">
+				<anchored to="contentanchor" position="belowright" offset="50,20" width="0" />
+				<invisible />
+			</genericcontrol>
+			
+			<genericcontrol name="left-anchor">
+				<anchored to="contentanchor" position="belowleft" offset="0,20" width="0" />
+				<invisible />
+			</genericcontrol>
+			
+		</sheetdata>
+	</windowclass>	
+</root>
