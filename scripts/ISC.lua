@@ -1,5 +1,4 @@
 ISCroot = "ISC";
-windowclass_name = "ISC-results-window";
 
 function onInit()
 	if User.isHost() then
@@ -7,7 +6,7 @@ function onInit()
 			"ISC-button-up",
 			"ISC-button-dn",
 			"Imm Skill Chk",
-			windowclass_name,
+			"ISC-results-window",
 			ISCroot,
 			0
 		);
