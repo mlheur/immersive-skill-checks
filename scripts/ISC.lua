@@ -63,8 +63,9 @@ function getSkillset()
 		local immersive = "";
 		local skillname = ""
 		for iAttr,attr in pairs(skillNode.getChildren()) do
-			if attr.getName() == "immersive" then immersive = attr.getValue() end
-			if attr.getName() == "skillname" then skillname = attr.getValue() end
+			attrName = attr.getName();
+			if attrName == "immersive" then immersive = attr.getValue() end
+			if attrName == "skillname" then skillname = attr.getValue() end
 		end
 		aSkillSet[skillname] = immersive;
 		ISC.dbg("  ISC:getSkillset() saving skill [k:["..tostring(skillname).."],v:["..tostring(immersive).."]]")
