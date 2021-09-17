@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <root version="3.3" release="1.0">
-	<announcement text="Immersive Skill Checks (C) 2021 github.com/mlheur/immersive-skill-checks" font="emotefont" icon="ISC-button-up" />
+	<announcement text="Immersive Skill Checks (C) 2021 mlheur@gmail.com" font="emotefont" icon="ISC_icon" />
 	<properties>
-		<name>immersive-skill-checks</name>
+		<name>immersive_skill_checks</name>
 		<version>0.0.0</version>
 		<author>mlheur</author>
 		<description>Run immersive skill checks for all characters.</description>
@@ -10,23 +10,22 @@
 		<loadorder>125</loadorder>
 	</properties>
 	<base>
-		<!-- Resources -->
-		<string name="ISC-results-window-title">Immersive Skill Checks</string>
-		<string name="ISC-setskills-window-title">Immersive Skill Selection</string>
-		<string name="ISC-button-label-cancel">Cancel</string>
-		<string name="ISC-button-label-ok">OK</string>
-		<string name="ISC-button-label-skillset">Skills</string>
-		<string name="ISC-button-label-rollnow">Roll Now</string>
-		<string name="ISC-button-label-autoroll">Roll Each Round</string>
-
-		<icon name="ISC-button-up" file="images/ISC-button-up.png" />
-		<icon name="ISC-button-dn" file="images/ISC-button-dn.png" />
-
-		<!-- Scripts -->
+		<string name="ISC_results_window_title">Immersive Skill Checks</string>
+		<string name="ISC_setskills_window_title">Immersive Skill Selection</string>
+		<string name="ISC_button_label_refresh">Refresh</string>
+		<string name="ISC_button_label_cancel">Cancel</string>
+		<string name="ISC_button_label_ok">OK</string>
+		<string name="ISC_button_label_skillset">Skills</string>
+		<string name="ISC_button_label_rollnow">Roll Now</string>
+		<string name="ISC_button_label_autoroll">Roll Each Round</string>
+		<string name="ISC_setskills_header_selected">Immersive</string>
+		<string name="ISC_setskills_header_skillname">Skill</string>
+		<icon name="ISC_icon" file="images/ISC_icon.png" />
+		<icon name="ISC_button_up" file="images/ISC_button_up.png" />
+		<icon name="ISC_button_dn" file="images/ISC_button_dn.png" />
+		<icon name="ISC_icon" file="images/ISC_icon.png" />
 		<script name="ISC" file="scripts/ISC.lua" />
-
-		<!-- XML -->
-		<includefile source="xml/ISC-setskills-window.xml" />
-		<includefile source="xml/ISC-results-window.xml" />
+		<includefile source="xml/ISC_results.xml" />
+		<includefile source="xml/ISC_setskills.xml" />
 	</base>
 </root>
