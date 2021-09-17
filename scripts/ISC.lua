@@ -47,7 +47,7 @@ function loadSkillset(aSkillSet)
 	ISC.dbg("++ISC:loadSkillset()");
 	DB.deleteChildren("ISC.ISC_aImmersiveSkills");
 	for k,v in pairs(aSkillSet) do
-		ISC.dbg("ISC:loadSkillset() given [k:["..tostring(k).."],v:["..tostring(v).."]]");
+		ISC.dbg("  ISC:loadSkillset() given [k:["..tostring(k).."],v:["..tostring(v).."]]");
 		local dbPath = "ISC.ISC_aImmersiveSkills." .. k;
 		local dbNode = DB.createNode(dbPath);
 		DB.createNode(dbPath .. ".immersive","number").setValue(v);
