@@ -16,15 +16,15 @@ function onInit()
 		if DB.getChild(ISCnode,"ISC_aImmersiveSkills") == nil then
 			firstInit();
 		end
-    end
+	end
 	ISC.dbg("--ISC:onInit()");
 end
 
 function enumerateSkills()
 	ISC.dbg("++ISC:enumerateSkills()");
-    allSkills = {};
-    for k,v in pairs(DataCommon.psskilldata) do allSkills[v] = 0 end
-    for k,v in pairs(DataCommon.skilldata) do allSkills[k] = 0 end
+	allSkills = {};
+	for k,v in pairs(DataCommon.psskilldata) do allSkills[v] = 0 end
+	for k,v in pairs(DataCommon.skilldata) do allSkills[k] = 0 end
 	ISC.dbg("--ISC:enumerateSkills()");
 	return allSkills;
 end
@@ -75,6 +75,6 @@ end
 
 function firstInit()
 	ISC.dbg("++ISC:firstInit()");
-    loadSkillset(defaultImmersiveSkills());
+	loadSkillset(defaultImmersiveSkills());
 	ISC.dbg("--ISC:firstInit()");
 end
