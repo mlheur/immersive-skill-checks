@@ -104,8 +104,8 @@ function getSkillset()
 	ISC.dbg("++ISC:getSkillset()");
 	local aSkillSet = {};
 	for iSkill,skillNode in pairs(DB.getChildren("ISC.ISC_aImmersiveSkills")) do
-		local immersive = "";
-		local skillname = ""
+		local immersive = 0;
+		local skillname = "**unset**"
 		for iAttr,attr in pairs(skillNode.getChildren()) do
 			attrName = attr.getName();
 			if attrName == "immersive" then immersive = attr.getValue() end
