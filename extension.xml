@@ -24,6 +24,7 @@
 		<icon name="ISC_button_dn" file="images/ISC_button_dn.png" />
 		<icon name="ISC_icon" file="images/ISC_icon.png" />
 		<script name="ISC" file="scripts/ISC.lua" />
+		<includefile source="xml/ISC.xml" />
 		<includefile source="xml/ISC_results.xml" />
 		<includefile source="xml/ISC_setskills.xml" />
 	</base>

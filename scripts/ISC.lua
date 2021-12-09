@@ -1,6 +1,9 @@
-ISCnode = "ISC";
+ISCpath = "ISC";
+RESULTS = ISCpath..".ISC_aResults";
+SKILLS = ISCpath..".ISC_aImmersiveSkills";
 defaultSkills = {"Arcana","History","Insight","Perception","Religion","Stealth","Survival"};
 DEBUG = true;
+
 function dbg(...) if ISC.DEBUG then print(unpack(arg)) end end
 
 function onInit()
@@ -14,16 +17,31 @@ function onInit()
 			"ISC",
 			0
 		);
-		if DB.getChild(ISCnode,"ISC_aImmersiveSkills") == nil then
+		if DB.getChild(SKILLS) == nil then
 			defaultImmersiveSkills();
 		end
 	end
 	ISC.dbg("--ISC:onInit()");
 end
 
+function resetResults()
+	DB.deleteChildren(RESULTS)
+end
+
+function addCombatant(keyCT, nodeCT)
+	local pathCT = nodeCT.getPath()
+	local name = DB.getValue(pathCT .. ".name")
+	local pcnpc = DB.getValue(pathCT .. ".link", "class")
+	local dbPath = RESULTS .. "." .. keyCT
+	local dbNode = DB.createNode(dbPath)
+	DB.createNode(dbPath .. ".ISC_charname", "string").setValue(name)
+	DB.createNode(dbPath .. ".ISC_chartype", "string").setValue(pcnpc)
+	dbg("==ISC:addCombatant(ISC_charname=["..name.."],ISC_chartype=["..pcnpc.."])")
+end
+
 function addSkillNode(skillname,immersive)
 	immersive = immersive or 0;
-	local dbPath = "ISC.ISC_aImmersiveSkills." .. skillname;
+	local dbPath = SKILLS .. "." .. skillname;
 	local dbNode = DB.createNode(dbPath);
 	DB.createNode(dbPath .. ".skillname","string").setValue(skillname);
 	DB.createNode(dbPath .. ".immersive","number").setValue(immersive);
@@ -72,7 +90,7 @@ end
 function resetSkills(validSkills)
 	ISC.dbg("++ISC:resetSkills()");
 	validSkills = validSkills or listValidSkills();
-	DB.deleteChildren("ISC.ISC_aImmersiveSkills");
+	DB.deleteChildren(SKILLS);
 	for _,skillname in next, listValidSkills() do
 		addSkillNode(skillname,0)
 	end
@@ -103,7 +121,7 @@ end
 function getSkillset()
 	ISC.dbg("++ISC:getSkillset()");
 	local aSkillSet = {};
-	for iSkill,skillNode in pairs(DB.getChildren("ISC.ISC_aImmersiveSkills")) do
+	for iSkill,skillNode in pairs(DB.getChildren(SKILLS)) do
 		local immersive = 0;
 		local skillname = "**unset**"
 		for iAttr,attr in pairs(skillNode.getChildren()) do

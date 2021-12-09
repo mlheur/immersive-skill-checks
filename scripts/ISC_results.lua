@@ -3,14 +3,16 @@ function onInit()
 	self["ISC_label_autoroll"].onButtonPress   = toggleAutoRoll;
 	self["ISC_button_rollnow"].onButtonPress   = rollNow;
 	self["ISC_button_skillset"].onButtonPress  = openSkillSetSelection;
-	openSkillSetSelection();
+	rollNow();
 	ISC.dbg("--ISC_results:onIint()");
 end
 
 function rollNow()
 	ISC.dbg("++ISC_Results:rollNow()")
-	--
-	ISC.dbg("--ISC_Results:rollNow()")
+	ISC.resetResults()
+	for keyCT, nodeCT in pairs(CombatManager.getCombatantNodes()) do
+		ISC.addCombatant(keyCT, nodeCT)
+	end
 end
 
 function openSkillSetSelection()
