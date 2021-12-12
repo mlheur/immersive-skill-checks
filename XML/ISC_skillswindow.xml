@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<windowclass name="ISC_skillswindow">
+		<frame>utilitybox</frame>
+		<placement><size width="450" height="650" /></placement>
+		<sizelimits>
+			<minimum width="100" height="100" />
+			<dynamic />
+		</sizelimits>
+		<playercontrol />
+		<nodelete />
+		<script file="scripts/ISC_skillswindow.lua" />
+		<sheetdata>
+			<windowtitlebar name="title">
+				<resource>ISC_skillswindow_title</resource>
+			</windowtitlebar>
+			
+			<anchor_title_utilitybox name="contentanchor" />
+
+			<genericcontrol name="ISC_setskills_frame">
+				<anchored to="contentanchor">
+					<top anchor="bottom" offset="20" />
+					<left offset="10" />
+					<right offset="-10" />
+					<bottom parent="" offset="-80" />
+				</anchored>
+				<frame name="groupbox" offset="15,15,15,15" />
+				<disabled />
+			</genericcontrol>
+
+			<button_text name="ISC_button_defaults">
+				<anchored to="contentanchor" height="20" width="80">
+					<left offset="10" />
+					<bottom parent="" offset="-30" />
+				</anchored>
+				<state textres="ISC_button_label_defaults" />
+			</button_text>
+			<button_text name="ISC_button_cancel">
+				<anchored to="contentanchor" height="20" width="80">
+					<right offset="-110" />
+					<bottom parent="" offset="-30" />
+				</anchored>
+				<state textres="ISC_button_label_cancel" />
+			</button_text>
+			<button_text name="ISC_button_ok">
+				<anchored to="contentanchor" height="20" width="80">
+					<right offset="-10" />
+					<bottom parent="" offset="-30" />
+				</anchored>
+				<state textres="ISC_button_label_ok" />
+			</button_text>
+
+
+			<list_text name="ISC_setskills_listframe">
+				<anchored to="ISC_setskills_frame">
+					<left />
+					<top />
+					<right />
+					<bottom  />
+				</anchored>
+				<columns filldown="true" />
+				<datasource>ISC.immersive-skills</datasource>
+				<class>ISC_setskills_class</class>
+			</list_text>
+			<scrollbar_list>
+				<anchored to="ISC_setskills_listframe" />
+				<target>ISC_setskills_listframe</target>
+			</scrollbar_list>
+
+
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ISC_setskills_class">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<genericcontrol name="top_left_corner">
+				<anchored height="0" width="0">
+					<top />
+					<left />
+				</anchored>
+			</genericcontrol>
+
+			<button_checkbox name="immersive">
+				<anchored to="top_left_corner" width="30" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="5" />
+				</anchored>
+			</button_checkbox>
+			<string_textlistitem name="name">
+				<anchored to="immersive">
+					<top />
+					<left anchor="right" relation="relative" offset="5" />
+				</anchored>
+				<disabled />
+			</string_textlistitem>
+
+		</sheetdata>
+	</windowclass>
+
+</root>
