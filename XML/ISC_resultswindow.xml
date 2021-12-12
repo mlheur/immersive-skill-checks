@@ -73,7 +73,7 @@
 				</anchored>
 				<columns filldown="true" />
 				<class>ISC_results_character</class>
-				<datasource>ISC.roll-data</datasource>
+				<datasource>combattracker.list</datasource>
 				<skipempty />
 			</windowlist>
 			<scrollbar_list>
@@ -92,7 +92,7 @@
 				<anchored to="skillname_anchor" position="right" />
 				<columns fillwidth="true" width="60"/>
 				<class>ISC_skillresult_title</class>
-				<datasource>ISC.skill-titles</datasource>
+				<datasource>ISC.skillchecks</datasource>
 				<skipempty />
 			</windowlist>
 

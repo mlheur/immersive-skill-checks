@@ -1,9 +1,8 @@
 DEBUG = true;
 
 DBPATH = "ISC";
-RESULTS = DBPATH..".roll-data";
-SKILLS = DBPATH..".immersive-skills";
-TITLES = DBPATH..".skill-titles"
+SKILLS = DBPATH..".immersive-selection";
+TITLES = DBPATH..".skillchecks"
 DEFAULTS = {"Arcana","History","Insight","Perception","Religion","Stealth","Survival"};
 lastRoundRolled = -1
 

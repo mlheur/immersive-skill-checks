@@ -14,15 +14,12 @@ function onInit()
 end
 
 function rollNow()
-	ISC.lastRoundRolled = DB.getValue("combattracker.round")
 	ISC.dbg("++ISC_resultswindow:rollNow()")
 
-	-- clear all previous combatants and their results
+	ISC.lastRoundRolled = DB.getValue("combattracker.round")
+	ISC_DataMgr.resetTitles()
 	ISC_ResultsMgr.clearResults()
 	
-	-- get an updated list of skills
-	immskills = ISC_SkillsMgr.getSkillset()
-
 	-- create a row for each character in CT
 	for keyCT, nodeCT in pairs(CombatManager.getCombatantNodes()) do
 		nCombatant = ISC_ResultsMgr.addCombatant(keyCT, nodeCT)
