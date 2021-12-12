@@ -3,7 +3,6 @@ function onInit()
 	self["ISC_label_autoroll"].onButtonPress   = toggleAutoRoll;
 	self["ISC_button_rollnow"].onButtonPress   = rollNow;
 	self["ISC_button_skillset"].onButtonPress  = ISC_SkillsMgr.openSkillSetSelection;
-	DB.addHandler(ISC.SKILLS..".*.immersive", "onUpdate", ISC_DataMgr.resetTitles)
 	rollNow()
 	ISC.dbg("--ISC_resultswindow:onIint()");
 end

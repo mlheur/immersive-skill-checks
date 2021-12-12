@@ -8,9 +8,18 @@ DEFAULTS = {"Arcana","History","Insight","Perception","Religion","Stealth","Surv
 
 function dbg(...) if ISC.DEBUG then print(unpack(arg)) end end
 
+function initHandlers()
+	DB.addHandler(ISC.SKILLS..".*.immersive", "onUpdate", ISC_DataMgr.resetTitles)
+	ActionsManager.registerResultHandler("immersive-skill-check", ISC_ResultsMgr.onRoll)
+end
+
 function onInit()
 	ISC.dbg("++ISC:onInit()");
 	if User.isHost() then
+		initHandlers()
+		if DB.getChild(ISC.SKILLS) == nil then
+			ISC_SkillsMgr.setDefaultImmersiveSkills();
+		end
 		DesktopManager.registerDockShortcut(
 			"ISC_button_up",
 			"ISC_button_dn",
@@ -19,10 +28,6 @@ function onInit()
 			ISC.DBPATH,
 			0
 		);
-		if DB.getChild(ISC.SKILLS) == nil then
-			ISC_SkillsMgr.setDefaultImmersiveSkills();
-		end
-		ActionsManager.registerResultHandler("immersive-skill-check", ISC_ResultsMgr.onRoll)
 		ISC_ResultsMgr.openResults()
 	end
 	ISC.dbg("--ISC:onInit()");
