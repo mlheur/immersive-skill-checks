@@ -10,8 +10,13 @@
 		<loadorder>125</loadorder>
 	</properties>
 	<base>
-		<string name="ISC_results_window_title">Immersive Skill Checks</string>
-		<string name="ISC_setskills_window_title">Immersive Skill Selection</string>
+		<script name="ISC" file="scripts/ISC.lua" />
+		<script name="ISC_ResultsMgr" file="scripts/ISC_resultsmanager.lua" />
+		<script name="ISC_SkillsMgr" file="scripts/ISC_skillsmanager.lua" />
+		<script name="ISC_DataMgr" file="scripts/ISC_datamanager.lua" />
+		<script name="ISC_DragData" file="scripts/ISC_dragdata.lua" />
+		<string name="ISC_resultswindow_title">Immersive Skill Checks</string>
+		<string name="ISC_skillswindow_title">Immersive Skill Selection</string>
 		<string name="ISC_button_label_refresh">Refresh</string>
 		<string name="ISC_button_label_cancel">Cancel</string>
 		<string name="ISC_button_label_ok">OK</string>
@@ -23,9 +28,8 @@
 		<icon name="ISC_button_up" file="images/ISC_button_up.png" />
 		<icon name="ISC_button_dn" file="images/ISC_button_dn.png" />
 		<icon name="ISC_icon" file="images/ISC_icon.png" />
-		<script name="ISC" file="scripts/ISC.lua" />
-		<includefile source="xml/ISC.xml" />
-		<includefile source="xml/ISC_results.xml" />
-		<includefile source="xml/ISC_setskills.xml" />
+		<includefile source="xml/ISC_skillswindow.xml" />
+		<includefile source="xml/ISC_resultswindow.xml" />
 	</base>
+
 </root>
