@@ -3,10 +3,18 @@ function onInit()
 	self["ISC_label_autoroll"].onButtonPress   = toggleAutoRoll;
 	self["ISC_button_rollnow"].onButtonPress   = rollNow;
 	self["ISC_button_skillset"].onButtonPress  = ISC_SkillsMgr.openSkillSetSelection;
+	thisRound = DB.getValue("combattracker.round")
+	ISC.dbg("  ISC_resultswindow:onIint() lastRound=["..ISC.lastRoundRolled.."] thisRound=["..thisRound.."]")
+	if ISC.lastRoundRolled ~= thisRound then
+		if self["ISC_bAutoRoll"].getValue() ~= 0 then
+			rollNow()
+		end
+	end
 	ISC.dbg("--ISC_resultswindow:onIint()");
 end
 
 function rollNow()
+	ISC.lastRoundRolled = DB.getValue("combattracker.round")
 	ISC.dbg("++ISC_resultswindow:rollNow()")
 
 	-- clear all previous combatants and their results

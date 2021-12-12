@@ -5,6 +5,7 @@ RESULTS = DBPATH..".roll-data";
 SKILLS = DBPATH..".immersive-skills";
 TITLES = DBPATH..".skill-titles"
 DEFAULTS = {"Arcana","History","Insight","Perception","Religion","Stealth","Survival"};
+lastRoundRolled = -1
 
 function dbg(...) if ISC.DEBUG then print(unpack(arg)) end end
 
