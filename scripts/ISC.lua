@@ -10,7 +10,15 @@ function dbg(...) if ISC.DEBUG then print(unpack(arg)) end end
 
 function initHandlers()
 	DB.addHandler(ISC.SKILLS..".*.immersive", "onUpdate", ISC_DataMgr.resetTitles)
+	DB.addHandler("combattracker.round", "onUpdate", doAutoRoll )
 	ActionsManager.registerResultHandler("immersive-skill-check", ISC_ResultsMgr.onRoll)
+end
+
+function doAutoRoll(nUpdated)
+	wResultsWindow = Interface.findWindow("ISC_resultswindow", ISC.DBPATH)
+	if wResultsWindow == nil then return end
+	if wResultsWindow["ISC_bAutoRoll"].getValue() == 0 then return end
+	wResultsWindow.rollNow()
 end
 
 function onInit()
