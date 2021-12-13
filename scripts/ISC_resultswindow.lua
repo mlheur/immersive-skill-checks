@@ -4,15 +4,21 @@ function onInit()
 	self["ISC_label_autoroll"].onButtonPress   = toggleAutoRoll;
 	self["ISC_button_rollnow"].onButtonPress   = rollNow;
 	self["ISC_button_skillset"].onButtonPress  = ISC_SkillsMgr.openSkillSetSelection;
+	-- keep track if we used rollNow() to redraw each character's last roll result
+	bDrawn = false
+	-- if the round changed while the window was closed
 	thisRound = ISC_DataMgr.getRound()
 	ISC.dbg("  ISC_resultswindow:onIint() lastRound=["..ISC.lastRoundRolled.."] thisRound=["..thisRound.."]")
-	bDrawn = false
 	if ISC.lastRoundRolled ~= thisRound then
+		-- and if autoroll is enabled
 		if ISC_DataMgr.getAutoRoll() then
+			-- time to make a new set of immersive skill checks.
 			bDrawn = true
 			rollNow()
 		end
 	end
+	-- reassociate the matrix after the UI is opened;
+	-- those associations were lost when the window was closed and UI elements destroyed.
 	if not bDrawn then redraw() end
 	ISC.dbg("--ISC_resultswindow:onIint()");
 end
