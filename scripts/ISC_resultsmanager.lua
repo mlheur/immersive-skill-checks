@@ -3,32 +3,42 @@ function openResults()
 end
 
 function checkskill(keyCT, sSkill)
-	ISC.dbg("==ISC_resultsmanager:checkskill(): keyCT=["..keyCT.."] sSkill=["..sSkill.."]")
+	ISC.dbg("++ISC_resultsmanager:checkskill(): keyCT=["..keyCT.."] sSkill=["..sSkill.."]")
 
 	pResult = ISC_DataMgr.getCombantantResultNode(keyCT, sSkill).getPath()
+
+	local rRoll = {}
+	rRoll.aDice = { "d20" }
+	rRoll.nMod = 0 -- draginfo.getNumberData(), will be updated after figuring PC vs NPC.
+	rRoll.sType = "immersive-skill-check"
+	rRoll.sDesc = "" -- draginfo.getStringData(), will be set after draginfo is set by ActionSkill.perform*Rolld
+	rRoll.bSecret = true
+	rRoll.pResult = pResult
 
 	draginfo = ISC_DragMgr.createBaseData()
 	draginfo["dbref"] = pResult
 	local rActor = ActorManager.resolveActor("combattracker.list."..keyCT)
+	-- just here for referencing the rActor data model during debugging...
 	for k,v in pairs(rActor) do
-		ISC.dbg("==ISC_resultsmanager:checkskill() type(rActor["..k.."])=["..type(v).."]; v["..v.."]")
+		ISC.dbg("  ISC_resultsmanager:checkskill() type(rActor["..k.."])=["..type(v).."]; v["..v.."]")
 	end
 	if rActor["sType"] == "charsheet" then
 		ActionSkill.performRoll(draginfo, rActor, ISC_DataMgr.getCharsheetSkill(rActor["sCreatureNode"],sSkill))
+		rRoll.nMod = draginfo.getNumberData()
 	else
-		ActionSkill.performNPCRoll(draginfo, rActor, sSkill, nMod);
+		-- in FG/5e, NPCs don't have skills, they rely on the modifier for the ability the skill is based on.
+		sAbility = DataCommon.skilldata[sSkill]["stat"]
+		ISC.dbg("  ISC_resultsmanager:checkskill() sAbility=["..sAbility.."]")
+		rRoll.nMod = ActorManager5E.getAbilityBonus(rActor, sAbility)
+		ISC.dbg("  ISC_resultsmanager:checkskill() rRoll.nMod=["..rRoll.nMod.."]")
+		ActionSkill.performNPCRoll(draginfo, rActor, sSkill, rRoll.nMod);
+		ISC.dbg("  ISC_resultsmanager:checkskill() rRoll.getNumberData()=["..draginfo.getNumberData().."]")
 	end
-
-	local rRoll = {}
-	rRoll.aDice = { "d20" }
-	rRoll.nMod = draginfo.getNumberData()
-	rRoll.sType = "immersive-skill-check"
 	rRoll.sDesc = draginfo.getStringData()
-	rRoll.bSecret = true
-	rRoll.pResult = pResult
 
 	local rThrow = ActionsManager.buildThrow(rSource, {}, rRoll, false);
 	Comm.throwDice(rThrow);
+	ISC.dbg("--ISC_resultsmanager:checkskill()")
 end
 
 function mkBonus(nMod)
