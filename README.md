@@ -24,3 +24,4 @@ To Do:
  - improve spacing (tighter rows, adjust long skill names)
  - include custom skills, beyond DataCommon.skilldata, .psskilldata
  - share and solicit feedback
+ - better handling when PC has never activated their charsheet.skilllist nodes
