@@ -4,7 +4,7 @@ end
 
 function resetSkills(newSkillList)
 	ISC.dbg("++ISC_skillsmanager:resetSkills()");
-	ISC_DataMgr.resetNode(ISC.SKILLS);
+	ISC_DataMgr.resetNode(ISC_DataMgr.SKILLS);
 	newSkillList = newSkillList or DataCommon.psskilldata;
 	for _,skillname in pairs(newSkillList) do
 		local skilldata = {}
