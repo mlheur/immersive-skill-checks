@@ -1,3 +1,6 @@
+-- https://www.fantasygrounds.com/forums/showthread.php?48145-Creating-Cloning-or-Writing-a-Class-for-dragdata
+-- https://www.fantasygrounds.com/forums/showthread.php?50651-Custom-Draginfo
+
 --When drag objects are set using the setData function, here is the expected format of the LUA table used to define the drag object:
 --
 --    type: String. Drag object type.
@@ -131,7 +134,7 @@ function getType() return dd.type end
 function isType(sCmp) return dd.type == sCmp end
 function nextSlot() dd.slot_ptr = dd.slot_ptr + 1 end
 function reset()
-    dd = createBaseData(dd.dbRef)
+    dd = createBaseData()
 end
 function resetType() dd.type = dd.slots[dd.slot_ptr].type end
 function revealDice(r) dd.reveal = r end
