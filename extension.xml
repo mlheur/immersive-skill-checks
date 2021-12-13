@@ -14,7 +14,7 @@
 		<script name="ISC_ResultsMgr" file="scripts/ISC_resultsmanager.lua" />
 		<script name="ISC_SkillsMgr" file="scripts/ISC_skillsmanager.lua" />
 		<script name="ISC_DataMgr" file="scripts/ISC_datamanager.lua" />
-		<script name="ISC_DragData" file="scripts/ISC_dragdata.lua" />
+		<script name="ISC_DragMgr" file="scripts/ISC_dragdata.lua" />
 		<string name="ISC_resultswindow_title">Immersive Skill Checks</string>
 		<string name="ISC_skillswindow_title">Immersive Skill Selection</string>
 		<string name="ISC_button_label_refresh">Refresh</string>

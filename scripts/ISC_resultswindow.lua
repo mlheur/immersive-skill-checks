@@ -3,7 +3,7 @@ function onInit()
 	self["ISC_label_autoroll"].onButtonPress   = toggleAutoRoll;
 	self["ISC_button_rollnow"].onButtonPress   = rollNow;
 	self["ISC_button_skillset"].onButtonPress  = ISC_SkillsMgr.openSkillSetSelection;
-	thisRound = DB.getValue("combattracker.round")
+	thisRound = ISC_DataMgr.getRound()
 	ISC.dbg("  ISC_resultswindow:onIint() lastRound=["..ISC.lastRoundRolled.."] thisRound=["..thisRound.."]")
 	if ISC.lastRoundRolled ~= thisRound then
 		if self["ISC_bAutoRoll"].getValue() ~= 0 then
@@ -15,23 +15,15 @@ end
 
 function rollNow()
 	ISC.dbg("++ISC_resultswindow:rollNow()")
-
-	ISC.lastRoundRolled = DB.getValue("combattracker.round")
-	ISC_DataMgr.resetTitles()
-	ISC_ResultsMgr.clearResults()
-	
+	ISC.lastRoundRolled = ISC_DataMgr.getRound()
+	aTitles = ISC_DataMgr.resetTitles()
+	ISC_DataMgr.clearResults()
 	-- create a row for each character in CT
-	for keyCT, nodeCT in pairs(CombatManager.getCombatantNodes()) do
-		nCombatant = ISC_ResultsMgr.addCombatant(keyCT, nodeCT)
-		pCombatant = nCombatant.getPath()
-		ISC.dbg("checking: next character pCombatant=["..pCombatant.."]")
-
-		wCombatant = ISC.findWindow(self["ISC_results_list"], pCombatant)
-		wCombatant["ISC_results_skillresult_list"].setDatabaseNode(pCombatant .. ".results")
-		for sSkill,vSkill in pairs(immskills) do
-			if vSkill["immersive"] ~= 0 then
-				nResult = ISC_ResultsMgr.checkskill(nCombatant, sSkill, wCombatant)
-			end
+	for i,wResultsChar in pairs(self["ISC_results_list"].getWindows()) do
+		keyCT = wResultsChar.getDatabaseNode().getName()
+		wResultsChar["ISC_results_skillresult_list"].setDatabaseNode(ISC_DataMgr.getCombatantResultList(keyCT))
+		for sSkill,vSkill in pairs(aTitles) do
+			nResult = ISC_ResultsMgr.checkskill(keyCT, sSkill)
 		end
 	end
 

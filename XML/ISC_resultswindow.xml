@@ -92,7 +92,7 @@
 				<anchored to="skillname_anchor" position="right" />
 				<columns fillwidth="true" width="60"/>
 				<class>ISC_skillresult_title</class>
-				<datasource>ISC.skillchecks</datasource>
+				<datasource>ISC.skill-titles</datasource>
 				<skipempty />
 			</windowlist>
 

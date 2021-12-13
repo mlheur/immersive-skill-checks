@@ -7,10 +7,10 @@ function resetSkills(newSkillList)
 	ISC_DataMgr.resetNode(ISC.SKILLS);
 	newSkillList = newSkillList or DataCommon.psskilldata;
 	for _,skillname in pairs(newSkillList) do
-		local data = {}
-		data["name"] = skillname
-		data["immersive"] = newSkillList["immersive"] or 0
-	    ISC_DataMgr.addSkillNode(data)
+		local skilldata = {}
+		skilldata["name"] = skillname
+		skilldata["immersive"] = newSkillList["immersive"] or 0
+	    ISC_DataMgr.addSkillNode(skilldata)
 	end
 	ISC.dbg("--ISC_skillsmanager:resetSkills()");
 end
@@ -39,8 +39,4 @@ function getSkillset()
         skillset[skillname] = ISC_DataMgr.getSkillData(skillname)
     end
     return skillset
-end
-
-function HUP()
-	loadSkillset(getSkillset())
 end

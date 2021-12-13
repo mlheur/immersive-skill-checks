@@ -59,7 +59,7 @@
 					<bottom  />
 				</anchored>
 				<columns filldown="true" />
-				<datasource>ISC.immersive-skills</datasource>
+				<datasource>ISC.immersive-selection</datasource>
 				<class>ISC_setskills_class</class>
 			</list_text>
 			<scrollbar_list>

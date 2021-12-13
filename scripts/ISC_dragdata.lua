@@ -35,14 +35,13 @@ function _slot()
     return s
 end
 
-function createBaseData(dbref)
-    ISC.dbg("==ISC_dragdata:createBaseData("..dbref..")")
-    dbref = dbref or ""
+function createBaseData()
+    ISC.dbg("==ISC_dragdata:createBaseData()")
     -- attrs
     dd.type = nil
     dd.icon = nil
     dd.description = nil
-    dd.dbref = dbref
+    dd.dbref = nil
     dd.secret = false
     dd.shortcuts = {}
     dd.slots = {_slot(type)}
