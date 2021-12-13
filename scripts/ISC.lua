@@ -1,6 +1,7 @@
 DEBUG = true;
 DEFAULTS = {"Arcana","History","Insight","Perception","Religion","Stealth","Survival"};
-lastRoundRolled = -1
+AUTO_DEFAULT = true
+lastRoundRolled = -1 -- I don't have any DB path enabled to track lastRoundRolled between play sessions.  Look into it if that's an issue or not.  Probably is an issue.
 
 function dbg(...) if ISC.DEBUG then print(unpack(arg)) end end
 

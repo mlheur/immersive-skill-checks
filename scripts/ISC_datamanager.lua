@@ -1,34 +1,47 @@
+-- these database path values are tightly coupled with the UI data in the XML files.
 DBPATH = "ISC"
 SKILLS = DBPATH..".immersive-selection"
 TITLES = DBPATH..".skill-titles"
 RESULTS = DBPATH..".results"
 
 function init()
-    DB.createChild(DBPATH)
-    getAutoRoll()
-    if DB.getChild(SKILLS) == nil then
+    DB.createChild(DBPATH) -- ensure our DB node exists
+    getAutoRoll() -- set a default value if none exists
+    if DB.getChild(SKILLS) == nil then -- more defaults
         ISC_SkillsMgr.setDefaultImmersiveSkills()
     end
-    initHandlers()
+    initHandlers() -- each run, need to add a handler for various data change events.
 end
 
 function initHandlers()
-	DB.addHandler(SKILLS..".*.immersive", "onUpdate", resetTitles)
-	DB.addHandler("combattracker.round", "onUpdate", doAutoRoll )
-	ActionsManager.registerResultHandler("immersive-skill-check", ISC_ResultsMgr.onRoll)
+	DB.addHandler(SKILLS..".*.immersive", "onUpdate", resetTitles) -- reset the list skill titles when the immersive settings change
+	DB.addHandler("combattracker.round", "onUpdate", doAutoRoll ) -- for enabling autoroll
+	ActionsManager.registerResultHandler("immersive-skill-check", ISC_ResultsMgr.onRoll) -- this is how to register a callback to get the result of a die throw.
 end
 
 function getRound()
-    return DB.getValue("combattracker.round")
+    return DB.getValue("combattracker.round") -- abstract all the DB.* functions into ISC_DataMgr.
 end
 
 function doAutoRoll(nUpdated)
+    -- the actual roll function is a member of the main window.  Get the window handle
+    -- so we can call its roll function.
 	wResultsWindow = Interface.findWindow("ISC_resultswindow", DBPATH)
+    -- window handles don't exist when the window is closed.  We won't do the autoroll
+    -- now, but next time the results window opens, so long as autoroll is enabled
+    -- and the combat tracker round is different than the last roll, it'll do the
+    -- roll when the window opens.  If many autorolls were skipped, only one roll
+    -- will happen when the window opens.
 	if wResultsWindow == nil then return end
+    -- if we go the window handle then the window is open and we can run the roll now.
+    -- this callback is always registered, and will be called every time the combat
+    -- tracker round number changes
 	if wResultsWindow["ISC_bAutoRoll"].getValue() == 0 then return end
 	wResultsWindow.rollNow()
 end
 
+-- I have a few functions in DataMgr that maybe belong in WindowMgr, but not enough
+-- to warrant refactoring those out right now.
 function openWindow(class)
 	local w = Interface.findWindow(class, DBPATH)
 	if w then
@@ -38,27 +51,37 @@ function openWindow(class)
 	end
 end
 
+-- Changes the value in the DB, tightly coupled with the UI tickbox.
+-- I want to refactor out the ISC_ from the control names, but that's a task for
+-- later.
 function setAutoRoll(v)
     DB.createChild(DBPATH, "ISC_bAutoRoll", "number").setValue(v)
 end
 
+-- returns a boolean if autoroll is enabled.  Also sets a default value
+-- when the DB has no value.
 function getAutoRoll()
     nAutoRoll = DB.getChild(DBPATH, "ISC_bAutoRoll")
     if nAutoRoll == nil then
-        setAutoRoll(true)
-        return true
+        setAutoRoll(ISC.AUTO_DEFAULT)
+        return ISC.AUTO_DEFAULT
     end
     return nAutoRoll.getValue() ~= 0
 end
 
+-- factor out any DB calls into ISC_DataMgr
 function resetNode(dbPath)
 	ISC.dbg("==ISC_datamanager:resetNode(): dbPath=["..dbPath.."]")
     DB.deleteChildren(dbPath)
 end
 
-function getCharsheetSkill(sActor,sSkill)
-	ISC.dbg("==ISC_datamanager:getCharsheetSkill(): sActor=["..sActor.."] sSkill=["..sSkill.."]")
-    nActor = DB.findNode(sActor)
+-- When a PC makes a skill check, we need a ref to the character sheet,
+-- actual the DB node where the character sheet has this character's data.
+-- Most importantly this is how ISC_ResultsMgr knows what modifier to
+-- apply to the d20.
+function getCharsheetSkill(pActor,sSkill)
+	ISC.dbg("==ISC_datamanager:getCharsheetSkill(): pActor=["..pActor.."] sSkill=["..sSkill.."]")
+    nActor = DB.findNode(pActor)
     nSkilllist = nActor.getChild("skilllist")
     for k,v in pairs(nSkilllist.getChildren()) do
         if v.getChild("name").getValue() == sSkill then
@@ -67,6 +90,23 @@ function getCharsheetSkill(sActor,sSkill)
     end
 end
 
+-- The easiest way I found, for the UI to accurately display only the
+-- immersive skill titles in the results window, was to create a simple
+-- list in the DB with only in-scope skills on the list.
+-- In the window XML file, the windowlist class uses this simple list
+-- in its <datasource> tag.
+-- So, whenever the *.immersive setting changes on any skill, we come
+-- here and review all skills and repopulate the simple list with just
+-- the immersive skills.  UI updates automatically based on this list.
+-- I don't like this method because I have all the skills listed in a few
+-- places already, and here I am adding another such list, causing more
+-- bloat in the db.xml file.  One day when I know better, come back
+-- and do a more effecient job of this.
+-- At least this could be improved without dropping _everything_ and
+-- walking the whole list on each change.
+-- One improvement, only reset titles when Skill Selection window closes.
+-- Another, don't walk the whole list, only touch here what changed in
+-- nUpdated.
 function resetTitles(nUpdated)
 	ISC.dbg("==ISC_datamanager:resetTitles()")
     aTitles = {}
@@ -81,25 +121,42 @@ function resetTitles(nUpdated)
     return aTitles
 end
 
+-- For each skill in the game, keep track of whether the DM considers it
+-- an immersive skill or not.  Naively we could store this in the DB as
+--     <...><skillname type="number">1</skillname></...>
+-- Except we can't do that because the skillname in the XML tag replaces
+-- spaces with underscores.  We need the actual name in the UI data
+-- so we have to store the immersive value alongside the name of the skill:
+--  <Sleight_of_Hand>
+--    <immersive type="number">0</immersive>
+--    <name type="string">Sleight of Hand</name>
+--  </Sleight_of_Hand>
+-- Here's how we abstract those nasty details from the rest of the code.
 function addSkillNode(skilldata)
     ISC.dbg("++ISC_datamanager:addSkillNode()")
+    -- There's room for lots more data integrity checking before proceeding.
+    -- That's only useful if the caller makes any mistakes, and will increase
+    -- cycle time.  Since we have few callers, it's more efficient to manage
+    -- the callers instead of increasing cycle time.
     if skilldata["name"] ~= nil then
         if DataCommon.skilldata[skilldata["name"]] ~= nil then
             skilldata["immersive"] = skilldata["immersive"] or 0
-            local dbPath = SKILLS .. "." .. skilldata["name"];
-            if dbPath == nil then return false end
+            local dbPath = SKILLS .. "." .. skilldata["name"]; -- this is where dbpath will have underscores added.
             DB.createNode(dbPath .. ".name","string").setValue(skilldata["name"]);
 	        DB.createNode(dbPath .. ".immersive","number").setValue(skilldata["immersive"])
             ISC.dbg("  ISC_datamanager:addSkillNode(): added skill=["..skilldata["name"].."] immersive=["..skilldata["immersive"].."]")
-        else
+        else -- this else clause is just for debugging.  Should be removed for efficiency.
             ISC.dbg("  ISC_datamanager:addSkillNode(): skill=["..skilldata["name"].."] is not in DataCommon.skilldata")
         end
-    else
+    else -- this else clause is just for debugging.  Should be removed for efficiency.
         ISC.dbg("  ISC_datamanager:addSkillNode(): skilldata has no name")
     end
     ISC.dbg("--ISC_datamanager:addSkillNode()")
 end
 
+-- Abstractify the DB calls from the rest of the code.
+-- this one only gets called to turn on default skills
+-- after resetting everything.  Maybe can be trimmed.
 function setImmersion(skillname,immersive)
 	ISC.dbg("==ISC_datamanager:setImmersion(): skillname=["..skillname.."] immersive=["..immersive.."]")
     if DataCommon.skilldata[skillname] ~= nil then
@@ -108,6 +165,7 @@ function setImmersion(skillname,immersive)
     end
 end
 
+-- internal helper function to do error checking before calling getValue().
 function getDBNodeValue(dbPath, attr)
 	ISC.dbg("==ISC_datamanager:getDBNodeValue(): dbPath=["..dbPath.."] attr=["..attr.."]")
     local node = DB.getChild(dbPath)
@@ -115,6 +173,7 @@ function getDBNodeValue(dbPath, attr)
     return DB.getValue(node, attr)
 end
 
+-- Pull out DB data and return it as a table. This is the inverse function of addSkillNode().
 function getSkillData(skillname)
 	ISC.dbg("==ISC_datamanager:getSkillData(): skillname=["..skillname.."]")
     skilldata = {}
@@ -124,11 +183,16 @@ function getSkillData(skillname)
     return skilldata
 end
 
+-- Abstractify the DB call to get the list of all DB nodes for all skill immersion settings.
 function getSkillset()
 	ISC.dbg("==ISC_datamanager:getSkillset()")
     return DB.getChildren(SKILLS)
 end
 
+-- Another window manager function.  FG lacks any Interface.findChildWindow() function.
+-- Interface.findWindow() only returns top level window classes, and not any windows
+-- contained in window containers.
+-- This will help locate a child window in a given <windowlist>.
 function findWindow(windowlist,keyCT)
 	ISC.dbg("==ISC_datamanager:findWindow(): keyCT=["..keyCT.."]")
 	for wndName,w in pairs(windowlist.getWindows()) do
@@ -139,13 +203,21 @@ function findWindow(windowlist,keyCT)
 	return nil
 end
 
+-- Get the DB node whose children are the list of skill check results on a single
+-- given actor.  UI will display results based on the values added to this list.
+-- Actually, UI associations are created just before the roll in
+-- ISC_resultswindow.refresh() by calling windowlist.setdatbasenode() for the combatant
+-- when that happens the UI elements are drawn with label="", total=0.
+-- Later, the onRoll handler comes back and uses this function to find
+-- the result windowclass instance to store the modifier and total for display.
 function getCombatantResultList(keyCT)
 	ISC.dbg("==ISC_datamanager:getCombatantResultList(): keyCT=["..keyCT.."]")
     nResults = DB.createNode(RESULTS)
     if nResults == nil then return end
     return DB.createChild(nResults, keyCT)
 end
-
+-- next layer down from getCombatantResultList, this is a single result on
+-- that list...
 function getCombantantResultNode(keyCT, sSkill)
     if sSkill == nil then
         ISC.dbg("==ISC_datamanager:getCombantantResultNode(): pResult=keyCT=["..keyCT.."]")
@@ -155,7 +227,10 @@ function getCombantantResultNode(keyCT, sSkill)
         return getCombatantResultList(keyCT).createChild(sSkill)
     end
 end
+-- these two functions are how we dynamically map all the skill roll results
+-- in the database with the UI that displays those to the DM.
 
+-- helper function to abstractify DB. calls from all other code into ISC_DataMgr.
 function clearResults()
 	ISC.dbg("==ISC_datamanager:clearResults()")
     DB.deleteChildren(RESULTS)
