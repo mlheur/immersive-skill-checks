@@ -1,6 +1,6 @@
 DEBUG = true;
 DEFAULTS = {"Arcana","History","Insight","Perception","Religion","Stealth","Survival"};
-AUTO_DEFAULT = true
+AUTO_DEFAULT = 1
 
 function dbg(...) if ISC.DEBUG then print(unpack(arg)) end end
 
