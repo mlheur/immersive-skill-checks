@@ -6,7 +6,7 @@ function onInit()
 	thisRound = ISC_DataMgr.getRound()
 	ISC.dbg("  ISC_resultswindow:onIint() lastRound=["..ISC.lastRoundRolled.."] thisRound=["..thisRound.."]")
 	if ISC.lastRoundRolled ~= thisRound then
-		if self["ISC_bAutoRoll"].getValue() ~= 0 then
+		if ISC_DataMgr.getAutoRoll() then
 			rollNow()
 		end
 	end
