@@ -3,6 +3,7 @@ DBPATH = "ISC"
 SKILLS = DBPATH..".immersive-selection"
 TITLES = DBPATH..".skill-titles"
 RESULTS = DBPATH..".results"
+LAST_ROUND = DBPATH..".last-rolled-round"
 
 function init()
     DB.createChild(DBPATH) -- ensure our DB node exists
@@ -19,8 +20,21 @@ function initHandlers()
 	ActionsManager.registerResultHandler("immersive-skill-check", ISC_ResultsMgr.onRoll) -- this is how to register a callback to get the result of a die throw.
 end
 
+ -- abstract all the DB.* functions into ISC_DataMgr.
 function getRound()
-    return DB.getValue("combattracker.round") -- abstract all the DB.* functions into ISC_DataMgr.
+    return DB.getValue("combattracker.round")
+end
+function getRoundRolled()
+    v = DB.getValue(LAST_ROUND)
+    if v == nil or v < 0 then
+        setRoundRolled(0)
+        return 0
+    end
+    return v
+end
+function setRoundRolled(r)
+    r = r or getRound()
+    DB.createNode(LAST_ROUND,"number").setValue(r)
 end
 
 function doAutoRoll(nUpdated)

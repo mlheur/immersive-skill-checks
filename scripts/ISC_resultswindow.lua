@@ -7,9 +7,10 @@ function onInit()
 	-- keep track if we used rollNow() to redraw each character's last roll result
 	bDrawn = false
 	-- if the round changed while the window was closed
+	lastRound = ISC_DataMgr.getRoundRolled()
 	thisRound = ISC_DataMgr.getRound()
-	ISC.dbg("  ISC_resultswindow:onIint() lastRound=["..ISC.lastRoundRolled.."] thisRound=["..thisRound.."]")
-	if ISC.lastRoundRolled ~= thisRound then
+	ISC.dbg("  ISC_resultswindow:onIint() lastRound=["..lastRound.."] thisRound=["..thisRound.."]")
+	if lastRound ~= thisRound then
 		-- and if autoroll is enabled
 		if ISC_DataMgr.getAutoRoll() then
 			-- time to make a new set of immersive skill checks.
@@ -42,7 +43,7 @@ end
 function rollNow()
 	ISC.dbg("++ISC_resultswindow:rollNow()")
 	-- when autorolling, keep track of which round we last rolled on; helps prevent double rolling during a single round.
-	ISC.lastRoundRolled = ISC_DataMgr.getRound()
+	ISC_DataMgr.setRoundRolled()
 	-- ToDo: should not have to happen on each roll, but need to test all other cases do resetTitles before removing the sledghammer approach.
 	aTitles = ISC_DataMgr.resetTitles()
 	-- remove any previous results, helps ensure new check results get loaded; makes misses obvious (no bonus details, and result is 0)
