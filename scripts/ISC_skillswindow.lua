@@ -5,9 +5,9 @@ function onInit()
 	self["ISC_button_ok"].onButtonPress = doOK
 	self["ISC_button_defaults"].onButtonPress = doDefaults
 	-- ToDo: add a handler to redo ISC.loadskillset() on DB change.
-	-- ToDo: add a hook to open the skill window from the setskills window.
-	aSavedImmersiveSkills = ISC_SkillsMgr.getSkillset();
-	ISC_SkillsMgr.loadSkillset(aSavedImmersiveSkills);
+	-- ToDo: add a button to open the results window from the selection window.
+	aSavedImmersiveSkills = ISC_SkillsMgr.getSkillset(); -- save in case of [Cancel]
+	ISC_SkillsMgr.loadSkillset(aSavedImmersiveSkills); -- reload just in case in-game skills were updated since last open.  Maybe this should be a handler.
 end
 
 function doCancel()
