@@ -253,7 +253,7 @@ end
 function getSkillData(sSkill)
 	ISC.dbg("++ISC_datamanager:getSkillData(): sSkill=["..sSkill.."]")
     data = {}
-    local pSkill = SKILLS .. "." .. sSkill;
+    pSkill = SKILLS .. "." .. sSkill;
     data["name"] = getDBNodeValue(pSkill, "name")
     data["immersive"] = getDBNodeValue(pSkill, "immersive") or 0
     data["stat"] = getDBNodeValue(pSkill, "stat")
@@ -262,24 +262,11 @@ function getSkillData(sSkill)
     return data
 end
 
+-- get from consolidated local copy...
 function getSkillAbility(sSkill)
 	ISC.dbg("++ISC_datamanager:getSkillAbility() sSkill=["..sSkill.."]")
-    sAbility = ""
-    if DataCommon.skilldata[sSkill] ~= nil then
-        ISC.dbg("  ISC_datamanager:getSkillAbility() found ability in DataCommon.skilldata["..sSkill.."][stat]")
-        sAbility = DataCommon.skilldata[sSkill]["stat"]
-    end
-    -- overwrite the Ability if the local game DB uses the same name.
-    -- not the best solution but likely the way it's intended if the DM
-    -- creates a new skill with the same name as a 5e skill.
-    for keySkill,nSkill in pairs(DB.getChildren("skill")) do
-        ISC.dbg("  ISC_datamanager:getSkillAbility() checking for ability in db.xml <skill> node")
-        if sSkill == getDBNodeValue(nSkill, "name") then
-            ISC.dbg("  ISC_datamanager:getSkillAbility() found ability in db.xml <skill> node")
-            sAbility = getDBNodeValue(nSkill, "name"):lower()
-            break
-        end
-    end
+    pSkill = SKILLS .. "." .. sSkill
+    sAbility = getDBNodeValue(pSkill,"stat")
 	ISC.dbg("--ISC_datamanager:getSkillAbility() sSkill=["..sSkill.."] sAbility=["..sAbility.."]")
     return sAbility
 end
