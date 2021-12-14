@@ -40,14 +40,29 @@ function checkskill(keyCT, sSkill)
 	end
 
 	-- handle PCs (with skills) from NPCs (who only have abilities).
+	PCHasSkill = false
 	if rActor["sType"] == "charsheet" then
 		-- mostly to get the roll modifier based on effects.  Seems to work
 		-- well but this needs better testing for edge cases.
-		ActionSkill.performRoll(draginfo, rActor, ISC_DataMgr.getCharsheetSkill(rActor["sCreatureNode"],sSkill))
-		rRoll.nMod = draginfo.getNumberData()
-	else
-		-- in FG/5e, NPCs don't have skills, they rely on the modifier for the ability the skill is based on.
-		rRoll.nMod = ActorManager5E.getAbilityBonus(rActor, DataCommon.skilldata[sSkill]["stat"])
+		-- ToDo: if a game session has custom db.xml skill entries with names
+		-- matching 5e skills, even though I've overwritten those in ISC data,
+		-- this "performRoll" call will ignore that since the charsheet skill
+		-- data still references DataCommon.skilldata values directly.  Need
+		-- to check that fall back to NPC type skill checks if that's the case.
+		nCharSkill = ISC_DataMgr.getCharsheetSkill(rActor["sCreatureNode"],sSkill)
+		if nCharSkill ~= nil then
+			PCHasSkill = true
+			ActionSkill.performRoll(draginfo, rActor, nCharSkill)
+			rRoll.nMod = draginfo.getNumberData()
+		end
+	end
+	if rActor["sType"] ~= "charsheet" or not PCHasSkill then
+		-- in FG/5e, NPCs don't have skills...
+		-- in custom db.xml skill nodes, it's easily possible for PC records to be missing those custom skills...
+		-- ... in those cases, fall back on the skill's ability modifier.
+		sAbility = ISC_DataMgr.getSkillAbility(sSkill)
+		ISC.dbg("  ISC_resultsmanager:checkskill() sAbility=["..sAbility.."]")
+		rRoll.nMod = ActorManager5E.getAbilityBonus(rActor, sAbility)
 		ISC.dbg("  ISC_resultsmanager:checkskill() rRoll.nMod=["..rRoll.nMod.."]")
 		ActionSkill.performNPCRoll(draginfo, rActor, sSkill, rRoll.nMod);
 		ISC.dbg("  ISC_resultsmanager:checkskill() rRoll.getNumberData()=["..draginfo.getNumberData().."]")

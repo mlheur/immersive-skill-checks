@@ -1,4 +1,4 @@
-DEBUG = false;
+DEBUG = true;
 DEFAULTS = {"Arcana","History","Insight","Perception","Religion","Stealth","Survival"};
 AUTO_DEFAULT = 1
 

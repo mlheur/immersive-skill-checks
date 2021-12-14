@@ -10,12 +10,13 @@ end
 -- to enable immersion after doing the reset.
 function resetSkills(newSkillList)
 	ISC.dbg("++ISC_skillsmanager:resetSkills()");
-	ISC_DataMgr.resetNode(ISC_DataMgr.SKILLS);
-	newSkillList = newSkillList or DataCommon.psskilldata;
-	for _,skillname in pairs(newSkillList) do
+	ISC_DataMgr.clearSkills()
+	newSkillList = newSkillList or ISC_DataMgr.getAllGameSkills();
+	for sSkill,vSkill in pairs(newSkillList) do
 		local skilldata = {}
-		skilldata["name"] = skillname
-		skilldata["immersive"] = newSkillList["immersive"] or 0
+		skilldata["name"] = sSkill
+		skilldata["immersive"] = vSkill["immersive"] or 0
+		skilldata["stat"] = vSkill["stat"] or 0
 	    ISC_DataMgr.addSkillNode(skilldata)
 	end
 	ISC.dbg("--ISC_skillsmanager:resetSkills()");

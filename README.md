@@ -26,3 +26,4 @@ To Do:
  - share and solicit feedback
  - better handling when PC has never activated their charsheet.skilllist nodes
  - auto adjust PC/NPC names to see the NPC # (suggest: if len(name)>15 name=left(name,10)+"..."+right(name,2))
+ - fix db.xml <ISC><id-00001 /></ISC>
