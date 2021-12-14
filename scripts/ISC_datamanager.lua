@@ -102,12 +102,14 @@ end
 
 -- I have a few functions in DataMgr that maybe belong in WindowMgr, but not enough
 -- to warrant refactoring those out right now.
-function openWindow(class)
-	local w = Interface.findWindow(class, DBPATH)
+function openWindow(class, record)
+    record = record or DBPATH
+	ISC.dbg("==ISC_datamanager:findWindow(): class=["..class.."] record=["..record.."]")
+	local w = Interface.findWindow(class, record)
 	if w then
 		w.bringToFront()
 	else
-		Interface.openWindow(class, DBPATH)
+		Interface.openWindow(class, record)
 	end
 end
 
