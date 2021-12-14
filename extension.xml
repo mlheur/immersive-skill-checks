@@ -2,7 +2,7 @@
 <root version="3.3" release="1.0">
 	<announcement text="Immersive Skill Checks (C) 2021 mlheur@gmail.com" font="emotefont" icon="ISC_icon" />
 	<properties>
-		<name>immersive_skill_checks</name>
+		<name>immersive-skill-checks</name>
 		<version>0.0.0</version>
 		<author>mlheur</author>
 		<description>Run immersive skill checks for all characters.</description>

@@ -10,7 +10,7 @@ Installation:
  cd <fantasy_grounds_data_dir>/extensions
  git clone https://github.com/mlheur/immersive-skill-checks
 ```
- - enable extension "immersive_skill_checks" when creating or loading the campaign
+ - enable extension "immersive-skill-checks" when creating or loading the campaign
 
 To Do:
  - clicking on token opens charsheet or npc record
@@ -25,3 +25,4 @@ To Do:
  - include custom skills, beyond DataCommon.skilldata, .psskilldata
  - share and solicit feedback
  - better handling when PC has never activated their charsheet.skilllist nodes
+ - auto adjust PC/NPC names to see the NPC # (suggest: if len(name)>15 name=left(name,10)+"..."+right(name,2))
