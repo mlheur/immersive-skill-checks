@@ -1,4 +1,4 @@
-DEBUG = true;
+DEBUG = false;
 DEFAULTS = {"Arcana","History","Insight","Perception","Religion","Stealth","Survival"};
 AUTO_DEFAULT = 1
 
@@ -16,7 +16,7 @@ function onInit()
 			ISC_DataMgr.DBPATH,
 			0
 		);
-		ISC_ResultsMgr.openResults()
+		--ISC_ResultsMgr.openResults()
 	end
 	ISC.dbg("--ISC:onInit()");
 end
