@@ -40,7 +40,7 @@ end
 --------------------------------------------------------------------------------
 
 function getRound()
-    return DB.getValue("combattracker.round")
+    return DB.getValue("combattracker.round") or 0
 end
 
 function getRoundRolled()
@@ -259,7 +259,7 @@ function getSkillData(sSkill)
     data["name"] = getDBNodeValue(pSkill, "name")
     data["immersive"] = getDBNodeValue(pSkill, "immersive") or 0
     data["stat"] = getDBNodeValue(pSkill, "stat")
-    data["source"] = "DB"
+    data["source"] = getDBNodeValue(pSkill, "source")
 	ISC.dbg("--ISC_datamanager:getSkillData()")
     return data
 end
