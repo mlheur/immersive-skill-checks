@@ -6,8 +6,8 @@ function dbg(...) if ISC.DEBUG then print(unpack(arg)) end end
 
 function onInit()
 	ISC.dbg("++ISC:onInit()");
-    ISC_DataMgr.init()
 	if User.isHost() then
+		ISC_DataMgr.init()
 		DesktopManager.registerDockShortcut(
 			"ISC_button_up",
 			"ISC_button_dn",
