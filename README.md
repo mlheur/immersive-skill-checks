@@ -22,8 +22,14 @@ To Do:
  - sanitize whitespace
  - package it up as .ext
  - improve spacing (tighter rows, adjust long skill names)
- - include custom skills, beyond DataCommon.skilldata, .psskilldata
  - share and solicit feedback
- - better handling when PC has never activated their charsheet.skilllist nodes
  - auto adjust PC/NPC names to see the NPC # (suggest: if len(name)>15 name=left(name,10)+"..."+right(name,2))
+ - auto adjust long skill names, like long PC/NPC names
  - fix db.xml <ISC><id-00001 /></ISC>
+ - update ISC data when db.xml <skill> children are added/deleted.
+
+Testing:
+ - better handling when PC has never activated their charsheet.skilllist nodes
+ - include custom skills, beyond DataCommon.skilldata, .psskilldata
+
+Done:
