@@ -10,7 +10,7 @@ LAST_ROUND = DBPATH..".last-rolled-round"
 --------------------------------------------------------------------------------
 
 function init()
-    DB.createChild(DBPATH) -- ensure our DB node exists
+    DB.createNode(DBPATH) -- ensure our DB node exists
     getAutoRoll() -- set a default value if none exists
     if DB.getChild(SKILLS) == nil then -- more defaults
         ISC_SkillsMgr.setDefaultImmersiveSkills()
