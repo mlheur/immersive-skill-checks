@@ -33,10 +33,12 @@ end
 -- row of the matrix is associated with each character.  The columns will sort themselves out once the rows
 -- are identified.
 function redraw()
+	ISC.dbg("++ISC_resultswindow:redraw()")
 	for i,wResultsChar in pairs(self["ISC_results_list"].getWindows()) do
 		keyCT = wResultsChar.getDatabaseNode().getName()
 		wResultsChar["ISC_results_skillresult_list"].setDatabaseNode(ISC_DataMgr.getCombatantResultList(keyCT))
 	end
+	ISC.dbg("--ISC_resultswindow:redraw()")
 end
 
 -- walk the matrix and perform a skill check for each [character,skill] entry.
@@ -44,15 +46,13 @@ function rollNow()
 	ISC.dbg("++ISC_resultswindow:rollNow()")
 	-- when autorolling, keep track of which round we last rolled on; helps prevent double rolling during a single round.
 	ISC_DataMgr.setRoundRolled()
-	-- ToDo: should not have to happen on each roll, but need to test all other cases do resetTitles before removing the sledghammer approach.
-	aTitles = ISC_DataMgr.resetTitles()
 	-- remove any previous results, helps ensure new check results get loaded; makes misses obvious (no bonus details, and result is 0)
 	ISC_DataMgr.clearResults()
 	-- necessary to reassociate the matrix after wiping the DB nodes where UI was getting its results from.
 	redraw()
 	-- for each character, for each skill, check() and display the result.
 	for i,wResultsChar in pairs(self["ISC_results_list"].getWindows()) do
-		for sSkill,vSkill in pairs(aTitles) do
+		for sSkill in pairs(ISC_DataMgr.getImmersiveSkills()) do
 			nResult = ISC_ResultsMgr.checkskill(wResultsChar.getDatabaseNode().getName(), sSkill)
 		end
 	end

@@ -4,20 +4,34 @@ SKILLS = DBPATH..".immersive-selection"
 TITLES = DBPATH..".skill-titles"
 RESULTS = DBPATH..".results"
 LAST_ROUND = DBPATH..".last-rolled-round"
+AllGameSkillsCache = {}
 
 --------------------------------------------------------------------------------
 -- INITs, general DB functions
 --------------------------------------------------------------------------------
 
 function init()
-    DB.createNode(DBPATH) -- ensure our DB node exists
-    getAutoRoll() -- set a default value if none exists
-    if DB.getChild(SKILLS) == nil then -- more defaults
-        ISC_SkillsMgr.setDefaultImmersiveSkills()
-    end
-	DB.addHandler(SKILLS..".*.immersive", "onUpdate", resetTitles) -- reset the list skill titles when the immersive settings change
+    ISC.dbg("++ISC_datamanager:init()")
+    refresh()
+	DB.addHandler(SKILLS..".*.immersive", "onUpdate", doRedraw) -- reset the list skill titles when the immersive settings change
 	DB.addHandler("combattracker.round", "onUpdate", doAutoRoll ) -- for enabling autoroll
 	ActionsManager.registerResultHandler("immersive-skill-check", ISC_ResultsMgr.onRoll) -- this is how to register a callback to get the result of a die throw.
+    ISC.dbg("--ISC_datamanager:init()")
+end
+
+-- plan a heirarchy of resets whenever game skill data changes, to be called from onUpdate handlers
+function refresh()
+    ISC.dbg("++ISC_datamanager:refresh()")
+    DB.createNode(DBPATH) -- ensure our DB node exists
+    getAutoRoll() -- set a default value if none exists
+    getAllGameSkills() -- update self.AllGameSkillsCache
+    if DB.getChild(SKILLS) == nil then
+        ISC_SkillsMgr.setDefaultImmersiveSkills()
+    else
+        ISC_SkillsMgr.HUP()
+    end
+    doRedraw()
+    ISC.dbg("--ISC_datamanager:refresh()")
 end
 
 -- factor out any DB calls into ISC_DataMgr
@@ -29,10 +43,14 @@ end
 -- internal helper function to do error checking before calling getValue().
 function getDBNodeValue(dbPath, attr)
     if type(dbPath) ~= "string" then dbPath = dbPath.getPath() end
-	ISC.dbg("==ISC_datamanager:getDBNodeValue(): dbPath=["..dbPath.."] attr=["..attr.."]")
     local node = DB.getChild(dbPath)
-    if node == nil then return nil end
-    return DB.getValue(node, attr)
+    if node == nil then
+        ISC.dbg("==ISC_datamanager:getDBNodeValue(): no such node, return nil, dbPath=["..dbPath.."]")
+        return nil
+    end
+    v = DB.getValue(node, attr)
+	ISC.dbg("==ISC_datamanager:getDBNodeValue(): dbPath=["..dbPath.."] attr=["..attr.."]")
+    return v
 end
 
 --------------------------------------------------------------------------------
@@ -99,6 +117,16 @@ end
 --------------------------------------------------------------------------------
 -- Window Mgmt
 --------------------------------------------------------------------------------
+
+-- helper function to get window before calling its redraw function.
+function doRedraw(wndName)
+    updateImmersiveSkills()
+    wndName = wndName or "ISC_resultswindow"
+	wResultsWindow = Interface.findWindow(wndName, DBPATH)
+	if wResultsWindow ~= nil then
+	    wResultsWindow.redraw()
+    end
+end
 
 -- I have a few functions in DataMgr that maybe belong in WindowMgr, but not enough
 -- to warrant refactoring those out right now.
@@ -178,84 +206,82 @@ end
 -- One improvement, only reset titles when Skill Selection window closes.
 -- Another, don't walk the whole list, only touch here what changed in
 -- nUpdated.
-function resetTitles(nUpdated)
-	ISC.dbg("++ISC_datamanager:resetTitles()")
-    aTitles = {}
+function updateImmersiveSkills(nUpdated)
+	ISC.dbg("++ISC_datamanager:updateImmersiveSkills()")
     resetNode(TITLES)
-    for sSkill,vSkill in pairs(getAllGameSkills()) do
+    for _,vSkill in pairs(getAllGameSkills()) do
+        sSkill = vSkill["name"]
         data = getSkillData(sSkill)
         if data["immersive"] ~= 0 then
-            DB.createNode(TITLES.."."..sSkill..".name","string").setValue(sSkill)
-            aTitles[sSkill] = true
+            DB.createChild(TITLES, sSkill).createChild("name", "string").setValue(sSkill)
         end
     end
-	ISC.dbg("--ISC_datamanager:resetTitles()")
+	ISC.dbg("--ISC_datamanager:updateImmersiveSkills()")
+end
+
+function getImmersiveSkills()
+	ISC.dbg("++ISC_datamanager:getImmersiveSkills()")
+    aTitles = {}
+    for sSkill,vSkill in pairs(DB.getChildren(TITLES)) do
+        aTitles[sSkill] = true
+    end
+	ISC.dbg("--ISC_datamanager:getImmersiveSkills()")
     return aTitles
 end
 
-function getAllGameSkills()
-	ISC.dbg("++ISC_datamanager:getAllGameSkills()")
+function getDataCommonSkills()
+	ISC.dbg("++ISC_datamanager:getDataCommonSkills()")
     allskills = {}
     for sSkill,vSkill in pairs(DataCommon.skilldata) do
-        ISC.dbg("  ISC_datamanager:getAllGameSkills() found DataCommon.skilldata["..sSkill.."]")
         data = {}
         data["name"] = sSkill
         data["stat"] = vSkill["stat"]
         data["source"] = "DataCommon"
+        ISC.dbg("  ISC_datamanager:getDataCommonSkills() found DataCommon.skilldata["..sSkill.."] name=["..data["name"].."] stat=["..data["stat"].."]")
         allskills[data["name"]] = data
     end
-    -- this will overwrite any 5e skills with the same name,
-    -- not really sure a better to deal with collisions while
-    -- I'm only passing a string value beteween functions.
-    -- ToDo: refactor function signatures to take a skill node
+	ISC.dbg("--ISC_datamanager:getDataCommonSkills()")
+    return allskills
+end
+
+function getAllGameSkills()
+    ISC.dbg("++ISC_datamanager:getAllGameSkills()")
+    allskills = getDataCommonSkills()
     for keySkill,nSkill in pairs(DB.getChildren("skill")) do
-        ISC.dbg("  ISC_datamanager:getAllGameSkills() found DB.skill.["..keySkill.."]")
         data = {}
         data["name"] = getDBNodeValue(nSkill, "name")
         data["stat"] = getDBNodeValue(nSkill, "stat"):lower()
         data["source"] = "DB"
+        ISC.dbg("  ISC_datamanager:getAllGameSkills() found DB.skill.["..keySkill.."] name=["..data["name"].."] stat=["..data["stat"].."]")
         allskills[data["name"]] = data
     end
+    self.AllGameSkillsCache = allskills
 	ISC.dbg("--ISC_datamanager:getAllGameSkills()")
     return allskills
 end
 
--- For each skill in the game, keep track of whether the DM considers it
--- an immersive skill or not.  Naively we could store this in the DB as
---     <...><skillname type="number">1</skillname></...>
--- Except we can't do that because the skillname in the XML tag replaces
--- spaces with underscores.  We need the actual name in the UI data
--- so we have to store the immersive value alongside the name of the skill:
---  <Sleight_of_Hand>
---    <immersive type="number">0</immersive>
---    <name type="string">Sleight of Hand</name>
---  </Sleight_of_Hand>
--- Here's how we abstract those nasty details from the rest of the code.
-function addSkillNode(vSkill)
-    ISC.dbg("++ISC_datamanager:addSkillNode()")
-    -- There's room for lots more data integrity checking before proceeding.
-    -- That's only useful if the caller makes any mistakes, and will increase
-    -- cycle time.  Since we have few callers, it's more efficient to manage
-    -- the callers instead of increasing cycle time.
-    if isValidGameSkill(vSkill["name"]) then
-        vSkill["immersive"] = vSkill["immersive"] or 0
-        local dbPath = SKILLS .. "." .. vSkill["name"]; -- this is where dbpath will have underscores added.
-        DB.createNode(dbPath .. ".name","string").setValue(vSkill["name"]);
-        DB.createNode(dbPath .. ".immersive","number").setValue(vSkill["immersive"])
-        DB.createNode(dbPath .. ".stat","string").setValue(vSkill["stat"])
-        DB.createNode(dbPath .. ".source","string").setValue(vSkill["source"])
-        ISC.dbg("  ISC_datamanager:addSkillNode(): added skill=["..vSkill["name"].."] immersive=["..vSkill["immersive"].."]")
-    else -- this else clause is just for debugging.  Should be removed for efficiency.
-        ISC.dbg("  ISC_datamanager:addSkillNode(): is not a valid skill")
+function addSkillData(vSkill)
+    if vSkill["name"] == nil then
+        ISC.dbg("==ISC_datamanager:addSkillData() vSkill has no name, ditching")
+        return
     end
-    ISC.dbg("--ISC_datamanager:addSkillNode()")
+    ISC.dbg("++ISC_datamanager:addSkillData() vSkill[name]=["..vSkill["name"].."]")
+    if self.AllGameSkillsCache[vSkill["name"]] == nil then
+        ISC.dbg("--ISC_datamanager:addSkillData(): not in cache, probably not a skill anymore in game database")
+        return
+    end
+    local pSkill = SKILLS .. "." .. vSkill["name"];
+    DB.createChild(pSkill, "name",     "string").setValue(vSkill["name"]);
+    DB.createChild(pSkill, "immersive","number").setValue(vSkill["immersive"] or 0)
+    DB.createChild(pSkill, "stat",     "string").setValue(vSkill["stat"])
+    DB.createChild(pSkill, "source",   "string").setValue(vSkill["source"])
+    ISC.dbg("--ISC_datamanager:addSkillData(): added")
 end
 
--- Pull out DB data and return it as a table. This is the inverse function of addSkillNode().
 function getSkillData(sSkill)
 	ISC.dbg("++ISC_datamanager:getSkillData(): sSkill=["..sSkill.."]")
-    data = {}
-    pSkill = SKILLS .. "." .. sSkill;
+    local data = {}
+    local pSkill = SKILLS .. "." .. sSkill;
     data["name"] = getDBNodeValue(pSkill, "name")
     data["immersive"] = getDBNodeValue(pSkill, "immersive") or 0
     data["stat"] = getDBNodeValue(pSkill, "stat")

@@ -8,31 +8,24 @@ end
 -- Probably the most effective solution is to grab the datasource used by the in-game 5e Skills window.
 -- During reset, every skill is considered not immersive.  The caller has to take care
 -- to enable immersion after doing the reset.
-function addSkill(sSkill,vSkill)
-	local skilldata = {}
-	skilldata["name"] = sSkill
-	skilldata["immersive"] = vSkill["immersive"] or 0
-	skilldata["stat"] = vSkill["stat"] or 0
-	ISC_DataMgr.addSkillNode(skilldata)
-end
-
 function resetSkills(newSkillList)
 	ISC.dbg("++ISC_skillsmanager:resetSkills()");
 	ISC_DataMgr.clearSkills()
 	gameSkillList = ISC_DataMgr.getAllGameSkills()
 	newSkillList = newSkillList or {};
-	-- refresh from any changes in the [SKILLS] sidebar button
-	for sSkill,vSkill in pairs(gameSkillList) do
-		if newSkillList[sSkill] ~= nil then
-			addSkill(sSkill,vSkill)
+	-- learn any new skills from the game data
+	for _,vSkill in pairs(gameSkillList) do
+		-- ignore those that'll be added by the new list
+		ISC.dbg("  ISC_skillsmanager:resetSkills(): working on game skill vSKill[name]=["..vSkill["name"].."]");
+		if (newSkillList[vSkill["name"]] == nil) or (newSkillList[vSkill["name"]]["name"] == nil ) then
+			ISC.dbg("  ISC_skillsmanager:resetSkills(): added game skill, not defined in new skill list.");
+			ISC_DataMgr.addSkillData(vSkill)
 		end
 	end
 	-- add back any saved skills
-	for sSkill,vSkill in pairs(newSkillList) do
-		-- make sure the saved skill wasn't removed from game data.
-		if gameSkillList[sSkill] ~= nil then
-			addSkill(sSkill,vSkill)
-		end
+	for _,vSkill in pairs(newSkillList) do
+		-- addSKill will return early if the skill was removed from game data.
+		ISC_DataMgr.addSkillData(vSkill)
 	end
 	ISC.dbg("--ISC_skillsmanager:resetSkills()");
 end
@@ -48,7 +41,9 @@ function setDefaultImmersiveSkills()
 end
 
 function HUP()
+	ISC.dbg("++ISC_skillsmanager:HUP()");
 	resetSkills(getSkillset())
+	ISC.dbg("--ISC_skillsmanager:HUP()");
 end
 
 -- save in LUA table, in-memory, a copy of the current DB skill immersion selection.
@@ -56,8 +51,9 @@ end
 -- reapplied if the user cancels any changes while that window was open.
 function getSkillset()
     skillset = {}
-    for skillname,skillnode in pairs(ISC_DataMgr.getSkillset()) do
-        skillset[skillname] = ISC_DataMgr.getSkillData(skillname)
+    for sSkill,nSkill in pairs(ISC_DataMgr.getSkillset()) do
+		vSkill = ISC_DataMgr.getSkillData(sSkill)
+        skillset[sSkill] = vSkill
     end
     return skillset
 end
