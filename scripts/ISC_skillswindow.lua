@@ -7,11 +7,11 @@ function onInit()
 	-- ToDo: add a handler to redo ISC.loadskillset() on DB change.
 	-- ToDo: add a button to open the results window from the selection window.
 	aSavedImmersiveSkills = ISC_SkillsMgr.getSkillset(); -- save in case of [Cancel]
-	ISC_SkillsMgr.loadSkillset(aSavedImmersiveSkills); -- reload just in case in-game skills were updated since last open.  Maybe this should be a handler.
+	ISC_SkillsMgr.resetSkills(aSavedImmersiveSkills); -- reload just in case in-game skills were updated since last open.  Maybe this should be a handler.
 end
 
 function doCancel()
-	ISC_SkillsMgr.loadSkillset(aSavedImmersiveSkills)
+	ISC_SkillsMgr.resetSkills(aSavedImmersiveSkills)
 	self.close()
 end
 

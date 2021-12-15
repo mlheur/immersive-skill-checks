@@ -8,16 +8,31 @@ end
 -- Probably the most effective solution is to grab the datasource used by the in-game 5e Skills window.
 -- During reset, every skill is considered not immersive.  The caller has to take care
 -- to enable immersion after doing the reset.
+function addSkill(sSkill,vSkill)
+	local skilldata = {}
+	skilldata["name"] = sSkill
+	skilldata["immersive"] = vSkill["immersive"] or 0
+	skilldata["stat"] = vSkill["stat"] or 0
+	ISC_DataMgr.addSkillNode(skilldata)
+end
+
 function resetSkills(newSkillList)
 	ISC.dbg("++ISC_skillsmanager:resetSkills()");
 	ISC_DataMgr.clearSkills()
-	newSkillList = newSkillList or ISC_DataMgr.getAllGameSkills();
+	gameSkillList = ISC_DataMgr.getAllGameSkills()
+	newSkillList = newSkillList or {};
+	-- refresh from any changes in the [SKILLS] sidebar button
+	for sSkill,vSkill in pairs(gameSkillList) do
+		if newSkillList[sSkill] ~= nil then
+			addSkill(sSkill,vSkill)
+		end
+	end
+	-- add back any saved skills
 	for sSkill,vSkill in pairs(newSkillList) do
-		local skilldata = {}
-		skilldata["name"] = sSkill
-		skilldata["immersive"] = vSkill["immersive"] or 0
-		skilldata["stat"] = vSkill["stat"] or 0
-	    ISC_DataMgr.addSkillNode(skilldata)
+		-- make sure the saved skill wasn't removed from game data.
+		if gameSkillList[sSkill] ~= nil then
+			addSkill(sSkill,vSkill)
+		end
 	end
 	ISC.dbg("--ISC_skillsmanager:resetSkills()");
 end
@@ -32,15 +47,8 @@ function setDefaultImmersiveSkills()
 	ISC.dbg("--ISC_skillsmanager:setDefaultImmersiveSkills()");
 end
 
--- reapply a previous skill set after manipulating/mangling the in-UI selections.
--- most commonly used to cancel an undesired change in the Immersive Skills Selection window.
-function loadSkillset(skillset)
-	ISC.dbg("++ISC_skillsmanager:loadSkillset()");
-	ISC_SkillsMgr.resetSkills();
-	for skillname,skilldata in pairs(skillset) do
-		ISC_DataMgr.addSkillNode(skilldata);
-	end
-	ISC.dbg("--ISC_skillsmanager:loadSkillset()");
+function HUP()
+	resetSkills(getSkillset())
 end
 
 -- save in LUA table, in-memory, a copy of the current DB skill immersion selection.
