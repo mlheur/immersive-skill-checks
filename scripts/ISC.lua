@@ -8,15 +8,13 @@ function onInit()
 	ISC.dbg("++ISC:onInit()");
 	if User.isHost() then
 		ISC_DataMgr.init()
-		DesktopManager.registerDockShortcut(
-			"ISC_button_up",
-			"ISC_button_dn",
-			"Immersion",
-			"ISC_resultswindow",
-			ISC_DataMgr.DBPATH,
-			0
-		);
-		--ISC_ResultsMgr.openResults()
+		tButton = {}
+		tButton["tooltipres"] = "Immersion"
+		tButton["class"]      = "ISC_resultswindow"
+		tButton["path"]       = ISC_DataMgr.DBPATH
+		tButton["icon"]       = "ISC_button_up"
+		tButton["icon_down"]  = "ISC_button_dn"
+		DesktopManager.registerSidebarStackButton(tButton)
 	end
 	ISC.dbg("--ISC:onInit()");
 end
