@@ -12,24 +12,28 @@ Installation:
 ```
  - enable extension "immersive-skill-checks" when creating or loading the campaign
 
+Feedback:
+ - "You need to give this to FG just so that it rolls random dice at the top of the combat tracker", Cloak
+
 To Do:
  - clicking on token opens charsheet or npc record
  - auto resize main window, add limits
- - add nodes and remap character results list on skill immersion change or combattracker.list change
  - make onUpdate callbacks more efficient, only accessing updated nodes rather than walking the list
  - add an option selection to share roll results (immersion breaking IMO)
  - remove inneficcient debugging loops, comment all ISC.dbg calls?
- - sanitize whitespace
  - package it up as .ext
- - improve spacing (tighter rows, adjust long skill names)
  - share and solicit feedback
- - auto adjust PC/NPC names to see the NPC # (suggest: if len(name)>15 name=left(name,10)+"..."+right(name,2))
  - auto adjust long skill names, like long PC/NPC names
- - fix db.xml <ISC><id-00001 /></ISC>
- - update ISC data when db.xml <skill> children are added/deleted.
+ - horizontal scrollbar
 
 Testing:
  - better handling when PC has never activated their charsheet.skilllist nodes
  - include custom skills, beyond DataCommon.skilldata, .psskilldata
+ - fix db.xml <ISC><id-00001 /></ISC>
+ - auto adjust PC/NPC names to see the NPC # (suggest: if len(name)>15 name=left(name,10)+"..."+right(name,2))
+ - add nodes and remap character results list on title change or combattracker.list change
+ - update ISC data when db.xml <skill> children are added/deleted.
 
 Done:
+ - improve spacing (tighter rows, adjust long skill names)
+ - sanitize whitespace

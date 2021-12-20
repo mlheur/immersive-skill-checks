@@ -1,18 +1,13 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<root>
-	<!-- the main utility window that has dressings, buttons and a main
-	     panel for displaying all the skill roll results -->
-	<windowclass name="ISC_resultswindow">
-
+<?xml version="1.0" encoding="iso-8859-1"?><root>
+<!--#########################################################################-->
+	<windowclass name="immersive_results">
 		<frame>utilitybox</frame>
 		<placement><size width="480" height="400" /></placement>
 		<sizelimits>
-			<minimum width="480" height="400" />
+			<minimum width="400" height="400" />
 			<dynamic />
 		</sizelimits>
-		<playercontrol />
 		<nodelete />
-		<script file="scripts/ISC_resultswindow.lua" />
 		<sheetdata>
 			<close_utilitybox />
 			<windowtitlebar name="title">
@@ -21,146 +16,301 @@
 
 			<anchor_title_utilitybox name="resultswindow" />
 
-			<!-- all the buttons -->
-			<button_text name="ISC_button_skillset">
-				<anchored to="resultswindow" height="20" width="100">
-					<right offset="-10" />
-					<bottom parent="" offset="-30" />
-				</anchored>
+			<isc_button_bar name="button_bar" />
+			<isc_mainframe name="mainframe" />
+
+			<subwindow name="results_panel">
+				<class>results_panel</class>
+				<anchored to="mainframe" position="over" />
+				<activate />
+				<fastinit />
+			</subwindow>
+
+			<isc_button name="immskill_selection">
+				<anchored><right parent="button_bar" offset="-10" /></anchored>
 				<state textres="ISC_button_label_skillset" />
-			</button_text>
+				<script>
+					function onButtonPress()
+						Interface.openWindow("immersive_selection","ISC")
+					end
+				</script>
+			</isc_button>
 			
-			<button_text name="ISC_button_rollnow">
-				<anchored to="resultswindow" height="20" width="100">
-					<right offset="-130" />
-					<bottom parent="" offset="-30" />
-				</anchored>
+			<isc_button name="rollnow">
+				<anchored to="immskill_selection" position="left" offset="10,0"/>
 				<state textres="ISC_button_label_rollnow" />
-			</button_text>
+				<script>
+					function onInit() if DB.getChild("ISC","bPendingRoll") ~= nil then onButtonPress() end end
+					function onButtonPress()
+						ISC.dbg("++immersive_results:rollnow:onButtonPress()")
+						DB.deleteChild("ISC","bPendingRoll")
+						wResultsList = window["results_panel"].subwindow["results_list"].getWindows()
+						for _,w1 in pairs(wResultsList) do
+							for _,w2 in pairs(w1.results_list_row_entries.getWindows()) do
+								iscThrowMgr.throwDice(w2.getDatabaseNode())
+							end
+						end
+						ISC.dbg("--immersive_results:rollnow:onButtonPress()")
+					end
+				</script>
+			</isc_button>
 
-			<button_checkbox name="ISC_bAutoRoll" source="ISC_bAutoRoll">
-				<anchored to="resultswindow" height="20" width="20">
-					<left offset="5" />
-					<bottom parent="" offset="-30" />
-				</anchored>
-			</button_checkbox>
-			<button_text name="ISC_label_autoroll">
-				<state textres="ISC_button_label_autoroll" />
-				<anchored to="resultswindow" height="20" width="100">
-					<left offset="30" />
-					<bottom parent="" offset="-30" />
-				</anchored>
-			</button_text>
-
-			<!-- the main panel -->
-			<genericcontrol name="ISC_results_panel">
-				<anchored to="resultswindow">
-					<top anchor="bottom" offset="20" />
-					<left offset="10" />
-					<right offset="-10" />
-					<bottom parent="" offset="-80" />
-				</anchored>
-				<frame name="groupbox" offset="15,15,15,15" />
-				<disabled />
-			</genericcontrol>
-
-			<windowlist name="ISC_results_list">
-				<anchored to="ISC_results_panel">
+			<isc_checkbox name="bAutoroll">
+				<anchored to="button_bar" width="30" height="30" >
 					<left />
-					<top offset="30"/>
+					<bottom />
+					<offset>5,5</offset>
+				</anchored>
+				<frame name="fieldlight" />
+			</isc_checkbox>
+			<isc_button name="btnAutoroll">
+				<state textres="ISC_button_label_autoroll" />
+				<anchored><left parent="bAutoroll" anchor="right" offset="5" /></anchored>
+				<script>function onButtonPress() window["bAutoroll"].toggle() end</script>
+			</isc_button>
+
+		</sheetdata>
+	</windowclass>
+
+<!--#########################################################################-->
+	<windowclass name="results_panel">
+		<sheetdata>
+			<windowlist name="titles_list">
+				<anchored>
+					<top />
+					<left offset="150" />
 					<right />
+					<size><height>30</height></size>
+				</anchored>
+				<columns fillwidth="true" width="60" />
+				<class>immskill_title</class>
+				<datasource>.immskill_titles</datasource>
+				<script>
+					function addTitlesFromSource(pSource, nTitles)
+                        ISC.dbg("++results_panel:titles_list:addTitlesFromSource() pSource=["..pSource.."]")
+						for _,nSkill in pairs(DB.getChildren(pSource)) do
+							sSkill = nSkill.getChild("name").getValue()
+	                        ISC.dbg("  results_panel:titles_list:addTitlesFromSource() original sSkill=["..sSkill.."]")
+							bImmersive = (nSkill.getChild("immersive").getValue() ~= 0)
+							ISC.updateImmskillSelection(sSkill, bImmersive)
+						end
+                        ISC.dbg("--results_panel:titles_list:addTitlesFromSource()")
+					end
+					function onInit()
+                        ISC.dbg("++results_panel:titles_list:onInit()")
+						nTitles = getDatabaseNode()
+						addTitlesFromSource(ISC.datacommon_data, nTitles)
+						addTitlesFromSource(ISC.dbskill_data, nTitles)
+                        ISC.dbg("--results_panel:titles_list:onInit()")
+					end
+				</script>
+				<skipempty />
+			</windowlist>
+			<list_text name="results_list">
+				<anchored>
+					<top parent="titles_list" anchor="bottom" />
+					<left />
+					<right offset="-10"/>
 					<bottom />
 				</anchored>
-				<columns filldown="true" />
-				<class>ISC_results_character</class>
+				<class>results_list_row</class>
 				<datasource>combattracker.list</datasource>
+                <columns filldown="true" />
 				<skipempty />
-			</windowlist>
-			<scrollbar_list>
-				<anchored to="ISC_results_list" />
-				<target>ISC_results_list</target>
-			</scrollbar_list>
-
-			<!-- the title row of skill names -->
-			<genericcontrol name="skillname_anchor">
-				<anchored to="ISC_results_panel" height="20">
-					<top offset="5" />
-					<left offset="160" />
-				</anchored>
-			</genericcontrol>
-			<windowlist name="ISC_results_skillnames">
-				<anchored to="skillname_anchor" position="right" />
-				<columns fillwidth="true" width="60"/>
-				<class>ISC_skillresult_title</class>
-				<datasource>ISC.skill-titles</datasource>
-				<skipempty />
-			</windowlist>
+            </list_text>
+			<scrollbar>
+				<anchored to="results_list" />
+				<target>results_list</target>
+			</scrollbar>
 
 		</sheetdata>
 	</windowclass>
 
+<!--#########################################################################-->
 	<!-- a window containing the character name and a list of skill roll results -->
-	<windowclass name="ISC_results_character">
-		<margins control="0,0,0,0" />
-		<!--frame>groupbox</frame-->
-		<sizelimits><dynamic /></sizelimits>
+	<windowclass name="results_list_row">
 		<sheetdata>
-
-			<!-- the character name -->
-			<stringfield name="name">
-				<right />
-				<disabled />
-				<bounds>8,8,96,32</bounds>
-				<font>sheetlabel</font>
-			</stringfield>
-			<!-- the character portrait -->
+			<!-- ACTOR PART -->
+			<genericcontrol name="actor_panel">
+				<bounds>0,0,150,30</bounds>
+			</genericcontrol>
 			<tokenfield name="token">
-				<bounds>112,8,32,32</bounds>
+				<margins control="1,0,0,0" />
+				<anchored>
+					<right parent="actor_panel" offset="-1" />
+					<top parent="actor_panel" offset="1" />
+					<size><height>28</height><width>28</width></size>
+				</anchored>
+				<readonly />
 				<empty>token_empty</empty>
 			</tokenfield>
+			<stringfield name="name">
+				<anchored>
+					<top parent="actor_panel" />
+					<right parent="token" anchor="left" />
+					<left parent="actor_panel" />
+					<bottom parent="actor_panel" />
+				</anchored>
+				<right />
+				<readonly />
+				<font>sheetlabel</font>
+			</stringfield>
+			<stringfield name="actor_number">
+				<anchored>
+					<top parent="name" />
+					<right parent="name" offset="5" />
+					<size><height>18</height><width>25</width></size>
+				</anchored>
+				<nodrag />
+				<nodrop />
+				<nodragselect />
+				<static text=""/>
+				<readonly />
+				<center />
+				<frame name="tokennumber" />
+				<script>
+					function refresh()
+						sCharname = window["name"].getValue()
+						sCharNum = sCharname:match("^.*%s(%d+)$")
+						if sCharNum ~= nil then
+							getDatabaseNode().setValue(sCharNum)
+							setVisible(true)
+						else
+							getDatabaseNode().setValue(nil)
+							setVisible(false)
+						end
+					end
+					function onInit()
+						DB.addHandler("combattracker.list","onChildAdded",refresh)
+						DB.addHandler("combattracker.list.*.name","onUpdate",refresh)
+						refresh()
+					end
+					function onClose()
+						DB.removeHandler("combattracker.list","onChildAdded",refresh)
+						DB.removeHandler("combattracker.list.*.name","onUpdate",refresh)
+					end
+				</script>
+			</stringfield>
 
-			<!-- the horizontal list of skill roll results -->
-			<genericcontrol name="listanchor">
-				<bounds>160,0,0,48</bounds>
-			</genericcontrol>
-			<windowlist name="ISC_results_skillresult_list">
-				<anchored to="listanchor" position="right" />
+			<!-- RESULT PART -->
+			<windowlist name="results_list_row_entries">
+				<anchored>
+					<right />
+					<left parent="actor_panel" anchor="right" />
+					<top parent="actor_panel" anchor="top" />
+					<bottom parent="actor_panel" anchor="bottom" />
+				</anchored>
 				<columns fillwidth="true" width="60"/>
-				<class>ISC_skillresult_die</class>
+				<class>immskill_result</class>
+				<datasource>.immskill_result</datasource>
+				<script>
+					function onImmskillUpdate(nUpdated)
+						bImmersive = nUpdated.getValue() ~= 0
+						sSkillUpdated = nUpdated.getParent().getChild("name").getValue()
+						for keyCT,nActor in pairs(DB.getChildren("combattracker.list")) do
+							nImmskillActorResult = nActor.getChild("immskill_result")
+							if bImmersive then
+								-- add an entry
+								nSkillAdded = nImmskillActorResult.createChild(sSkillUpdated)
+								nSkillAdded.createChild("name","string").setValue(sSkillUpdated)
+								nSkillAdded.createChild("label","string").setValue("+/-")
+								nSkillAdded.createChild("total","number").setValue(-99)
+							else
+								-- search for this entry and delete it
+								for sSkill,nSkill in pairs(nImmskillActorResult.getChildren()) do
+									if nSkill.getChild("name").getValue() == sSkillUpdated then
+										DB.deleteNode(nSkill)
+										return
+									end
+								end
+							end
+						end
+					end
+
+					function refresh()
+						for keyCT,nActor in pairs(DB.getChildren("combattracker.list")) do
+							nImmskillActorResult = nActor.getChild("immskill_result")
+							if nImmskillActorResult ~= nil then
+								for sSkill,nSkill in pairs(nImmskillActorResult.getChildren()) do
+									if nSkill.getChild("name") == nil then
+										DB.deleteNode(nSkill)
+									else
+										if DB.getChild(ISC.immskill_titles, nSkill.getChild("name").getValue()) == nil then
+											DB.deleteNode(nSkill)
+										end
+									end
+								end
+								for _,n in pairs(DB.getChildren(ISC.immskill_titles)) do
+									sSkillAdded = n.getChild("name").getValue()
+									nSkillAdded = nImmskillActorResult.createChild(sSkillAdded)
+									nSkillAdded.createChild("name","string").setValue(sSkillAdded)
+									nLabel = nSkillAdded.createChild("label","string")
+									nTotal = nSkillAdded.createChild("total","number")
+									if nLabel.getValue() == "" then
+										nLabel.setValue("new")
+										nTotal.setValue(10)
+									end
+								end
+							end
+						end
+					end
+
+					function onInit()
+                        ISC.dbg("++results_list_row:onInit()")
+						DB.addHandler(ISC.datacommon_data .. ".*.immersive", "onUpdate", onImmskillUpdate)
+						DB.addHandler(ISC.dbskill_data .. ".*.immersive", "onUpdate", onImmskillUpdate)
+						refresh()
+                        ISC.dbg("--results_list_row:onInit()")
+					end
+
+					function onClose()
+                        ISC.dbg("++results_list_row:onClose()")
+						DB.removeHandler(ISC.datacommon_data .. ".*.immersive", "onUpdate", onImmskillUpdate)
+						DB.removeHandler(ISC.dbskill_data .. ".*.immersive", "onUpdate", onImmskillUpdate)
+                        ISC.dbg("--results_list_row:onClose()")
+					end
+				</script>
 				<skipempty />
 			</windowlist>
 		</sheetdata>
 	</windowclass>
 
-	<!-- The die roll result on display -->
-	<windowclass name="ISC_skillresult_die">
-		<margins control="0,0,0,4" />
-		<placement><size width="60" height="48" /></placement>
-		<datasource>results</datasource>
+<!--#########################################################################-->
+	<windowclass name="immskill_result">
 		<sheetdata>
-			<stringfield name="label">
-				<bounds>0,0,60,18</bounds>
-				<center />
-				<static />
-			</stringfield>
+			<genericcontrol name="result_panel"><bounds>0,0,60,30</bounds></genericcontrol>
+			<hs name="name" />
 			<basicnumber name="total">
-				<bounds>15,22,30,18</bounds>
+				<anchored>
+					<top parent="result_panel" offset="5" />
+					<right parent="result_panel" offset="-5" />
+					<bottom parent="result_panel" offset="-5" />
+					<size><width>25</width></size>
+				</anchored>
 			</basicnumber>
+			<stringfield name="label">
+				<anchored>
+					<top parent="result_panel" offset="5" />
+					<left parent="result_panel" offset="5" />
+					<bottom parent="result_panel" offset="-5" />
+					<right parent="total" anchor="left" offset="-5" />
+				</anchored>
+				<static />
+				<right />
+			</stringfield>
 		</sheetdata>
 	</windowclass>
 
-	<!-- The skillname above the die roll result -->
-	<windowclass name="ISC_skillresult_title">
-		<margins control="0,0,0,0" />
-		<placement><size width="60" height="20" /></placement>
+<!--#########################################################################-->
+	<windowclass name="immskill_title">
 		<sheetdata>
 			<stringfield name="name">
-				<bounds>0,0,60,18</bounds>
+				<bounds>0,5,60,20</bounds>
 				<center />
-				<static />
+				<readonly />
 			</stringfield>
 		</sheetdata>
 	</windowclass>
 
-
+<!--#########################################################################-->
 </root>
