@@ -114,13 +114,13 @@ end
 -- faithfully as possible, KISS works well.
 function onRoll(rSource, rTarget, rRoll)
     local sSkill = DB.findNode(rRoll.pResult).getChild("name").getValue()
-    local nBonus = getPCBonus(rSource, sSkill) or (ActorManager5E.getAbilityBonus(rSource, getSkillAbility(sSkill)) or 0)
+    rRoll.nMod = getPCBonus(rSource, sSkill) or (ActorManager5E.getAbilityBonus(rSource, getSkillAbility(sSkill)) or 0)
 
     ActionsManager2.decodeAdvantage(rRoll); -- check and update ADV/DIS modifiers in rRoll struct, not sure if it catches all of them or what?
     local nTotal = ActionsManager.total(rRoll); -- Apply modifiers and effects to the pure d20 result, and return the modified total.
 
-	ISC.dbg("==ISC_resultsmanager:onRoll() sSkill=["..sSkill.."], nBonus=["..nBonus.."], nTotal=["..nTotal.."]")
+	ISC.dbg("==ISC_resultsmanager:onRoll() sSkill=["..sSkill.."], rRoll.nMod=["..rRoll.nMod.."], nTotal=["..nTotal.."]")
 	nResult = DB.findNode(rRoll.pResult)
-	nResult.getChild("label").setValue(mkBonus(nBonus))
+	nResult.getChild("label").setValue(mkBonus(rRoll.nMod))
 	nResult.getChild("total").setValue(nTotal)
 end
