@@ -4,7 +4,7 @@
 		<frame>utilitybox</frame>
 		<placement><size width="480" height="400" /></placement>
 		<sizelimits>
-			<minimum width="400" height="400" />
+			<minimum width="345" height="300" />
 			<dynamic />
 		</sizelimits>
 		<nodelete />
