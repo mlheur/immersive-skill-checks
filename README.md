@@ -19,14 +19,17 @@ To Do:
  - clicking on token opens charsheet or npc record
  - auto resize main window, add limits
  - make onUpdate callbacks more efficient, only accessing updated nodes rather than walking the list
- - add an option selection to share roll results (immersion breaking IMO)
+ - add an option selection to share roll results with players (immersion breaking IMO)
  - remove inneficcient debugging loops, comment all ISC.dbg calls?
  - package it up as .ext
  - share and solicit feedback
  - auto adjust long skill names, like long PC/NPC names
  - horizontal scrollbar
+ - thorough testing of ADV/DIS and other special modifiers.
+ - better first init handling, had to reset a few times.
+ - option to show results in chat window
 
-Testing:
+Being Tested:
  - better handling when PC has never activated their charsheet.skilllist nodes
  - include custom skills, beyond DataCommon.skilldata, .psskilldata
  - fix db.xml <ISC><id-00001 /></ISC>
