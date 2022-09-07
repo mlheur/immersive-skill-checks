@@ -97,6 +97,7 @@ function createBaseData()
 	dd.setStringData = setStringData
 	dd.setTokenData = setTokenData
 	dd.setType = setType
+    dd.setDiceData = setDiceData
     dbg("--createBaseData()")
     return dd
 end
@@ -237,4 +238,10 @@ end
 function setType(t)
     dbg("+-setType("..t..")")
     dd.type = t
+end
+
+function setDiceData(aDice)
+    dbg("+-setDiceData(table aDice)")
+    dd.aDice = aDice
+    dd.type = "aDice"
 end
