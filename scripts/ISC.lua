@@ -1,4 +1,4 @@
-DEBUG = true;
+DEBUG = false;
 DEFAULTS = {"Arcana", "History", "Insight", "Perception", "Religion", "Stealth", "Survival" }
 
 datacommon_data = "ISC.datacommon_data"
@@ -70,7 +70,7 @@ function onInit()
 			ISC.setDefaults()
 		end
 		tButton = {}
-		tButton["tooltipres"] = "Immersion"
+		tButton["tooltipres"] = "ISC_resultswindow_title"
 		tButton["class"]      = "immersive_results"
 		tButton["path"]       = "ISC"
 		tButton["icon"]       = "ISC_button_up"
@@ -78,7 +78,7 @@ function onInit()
 		DesktopManager.registerSidebarStackButton(tButton)
 		ActionsManager.registerResultHandler("ISC", iscThrowMgr.onRoll) -- if rRoll["sType"] == "ISC" then call iscThrowMgr.onRoll after throwing dice.
 		DB.addHandler("combattracker.round","onUpdate",iscThrowMgr.doRoundChange)
-		Interface.openWindow("immersive_results", "ISC")
+		-- Interface.openWindow("immersive_results", "ISC")
 	end
 	ISC.dbg("--ISC:onInit()");
 end
