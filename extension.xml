@@ -3,7 +3,7 @@
 	<announcement text="Immersive Skill Checks (C) 2021 mlheur@gmail.com" font="emotefont" icon="ISC_icon" />
 	<properties>
 		<name>immersive-skill-checks</name>
-		<version>0.0.0</version>
+		<version>1.2.3</version>
 		<author>mlheur</author>
 		<description>Run immersive skill checks for all characters.</description>
 		<ruleset><name>5E</name></ruleset>
@@ -23,7 +23,6 @@
 		<icon name="ISC_icon" file="images/ISC_icon.png" />
 		<icon name="ISC_button_up" file="images/ISC_button_up.png" />
 		<icon name="ISC_button_dn" file="images/ISC_button_dn.png" />
-		<icon name="ISC_icon" file="images/ISC_icon.png" />
 		<includefile source="xml/ISC_templates.xml" />
 		<includefile source="xml/ISC_skillswindow.xml" />
 		<includefile source="xml/ISC_resultswindow.xml" />
