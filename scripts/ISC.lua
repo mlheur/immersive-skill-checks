@@ -73,9 +73,9 @@ function onInit()
 		tButton["tooltipres"] = "ISC_resultswindow_title"
 		tButton["class"]      = "immersive_results"
 		tButton["path"]       = "ISC"
-		tButton["icon"]       = "ISC_button_up"
-		tButton["icon_down"]  = "ISC_button_dn"
-		DesktopManager.registerSidebarStackButton(tButton)
+		tButton["sIcon"]       = "ISC_button_up"
+		tButton["sIcon_down"]  = "ISC_button_dn"
+		DesktopManager.registerSidebarToolButton(tButton)
 		ActionsManager.registerResultHandler("ISC", iscThrowMgr.onRoll) -- if rRoll["sType"] == "ISC" then call iscThrowMgr.onRoll after throwing dice.
 		DB.addHandler("combattracker.round","onUpdate",iscThrowMgr.doRoundChange)
 		-- Interface.openWindow("immersive_results", "ISC")
