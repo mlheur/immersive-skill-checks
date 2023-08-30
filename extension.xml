@@ -20,9 +20,7 @@
 		<string name="ISC_button_label_skillset">Skills</string>
 		<string name="ISC_button_label_rollnow">Roll Now</string>
 		<string name="ISC_button_label_autoroll">Autoroll</string>
-		<icon name="ISC_icon" file="images/ISC_icon.png" />
-		<icon name="ISC_button_up" file="images/ISC_button_up.png" />
-		<icon name="ISC_button_dn" file="images/ISC_button_dn.png" />
+		<icon name="ISC_icon" file="graphics/buttons/button_roll.png" />
 		<includefile source="xml/ISC_templates.xml" />
 		<includefile source="xml/ISC_skillswindow.xml" />
 		<includefile source="xml/ISC_resultswindow.xml" />
