@@ -1,41 +1,26 @@
 <root>
-    <template name="isc_button_bar">
-        <genericcontrol> 
-            <anchored>
-                <left offset="20" />
-                <top anchor="bottom" offset="-50" />
-                <right offset="-20" />
-                <bottom offset="-20" />
-            </anchored>
-        </genericcontrol>
-    </template>
-
     <template name="isc_mainframe">
         <genericcontrol>
 			<frame name="groupbox" offset="5,5,5,5" />
             <anchored>
-                <left offset="20" />
-                <right offset="-20" />
-                <top parent="title" offset="5" anchor="bottom" />
-                <bottom parent="button_bar" offset="-5" anchor="top" />
+                <left offset="30" />
+                <right offset="-30" />
+                <top parent="title" anchor="bottom" offset="5" />
+                <bottom parent="bottomanchor" anchor="top" offset="-35" />
             </anchored>
         </genericcontrol>
     </template>
 
-    <template name="isc_button">
-        <button_text>
-            <anchored>
-                <top parent="button_bar" anchor="bottom" offset="-25" />
-                <bottom parent="button_bar" anchor="bottom" offset="-5" />
-                <size><width>80</width></size>
-            </anchored>
-        </button_text>
-    </template>
-
     <template name="isc_checkbox">
         <button_checkbox>
+            <anchored to="bottomanchor" width="30" height="30" relation="relative" />
             <script>function toggle() setValue(((getValue() or 0)+1)%2) end</script>
         </button_checkbox>
     </template>
 
+    <template name="isc_button" >
+        <button_text>
+            <anchored to="bottomanchor" width="80" relation="relative" />
+        </button_text>
+    </template>
 </root>

@@ -9,14 +9,13 @@
 		</sizelimits>
 		<nodelete />
 		<sheetdata>
-			<close_utilitybox />
 			<windowtitlebar name="title">
 				<resource>ISC_resultswindow_title</resource>
 			</windowtitlebar>
 
-			<anchor_title_utilitybox name="resultswindow" />
+			<anchor_content_utilitybox_top />
+			<anchor_content_utilitybox_bottom />
 
-			<isc_button_bar name="button_bar" />
 			<isc_mainframe name="mainframe" />
 
 			<subwindow name="results_panel">
@@ -27,7 +26,7 @@
 			</subwindow>
 
 			<isc_button name="immskill_selection">
-				<anchored><right parent="button_bar" offset="-10" /></anchored>
+				<anchored position="aboveright" />
 				<state textres="ISC_button_label_skillset" />
 				<script>
 					function onButtonPress()
@@ -37,7 +36,7 @@
 			</isc_button>
 			
 			<isc_button name="rollnow">
-				<anchored to="immskill_selection" position="left" offset="10,0"/>
+				<anchored position="aboveright" offset="90,0" />
 				<state textres="ISC_button_label_rollnow" />
 				<script>
 					function onInit() if DB.getChild("ISC","bPendingRoll") ~= nil then onButtonPress() end end
@@ -56,19 +55,17 @@
 			</isc_button>
 
 			<isc_checkbox name="bAutoroll">
-				<anchored to="button_bar" width="30" height="30" >
-					<left />
-					<bottom />
-					<offset>5,5</offset>
-				</anchored>
+				<anchored position="aboveleft" offset="0,-5" />
 				<frame name="fieldlight" />
 			</isc_checkbox>
 			<isc_button name="btnAutoroll">
+				<anchored position="aboveleft" offset="35,0" />
 				<state textres="ISC_button_label_autoroll" />
-				<anchored><left parent="bAutoroll" anchor="right" offset="5" /></anchored>
 				<script>function onButtonPress() window["bAutoroll"].toggle() end</script>
 			</isc_button>
 
+			<resize_utilitybox />
+			<close_utilitybox />
 		</sheetdata>
 	</windowclass>
 
@@ -167,7 +164,7 @@
 				<static text=""/>
 				<readonly />
 				<center />
-				<frame name="tokennumber" />
+				<frame name="token_ordinal" />
 				<script>
 					function refresh()
 						sCharname = window["name"].getValue()

@@ -19,12 +19,13 @@
 			<windowtitlebar name="title">
 				<resource>ISC_skillswindow_title</resource>
 			</windowtitlebar>
+			<anchor_content_utilitybox_top />
+			<anchor_content_utilitybox_bottom />
 
-			<isc_button_bar name="button_bar" />
 			<isc_mainframe name="mainframe" />
 
             <isc_button name="ok">
-				<anchored><right parent="button_bar" offset="-10" /></anchored>
+				<anchored position="aboveright" />
                 <state textres="ISC_button_label_ok" />
                 <script>
                     function onButtonPress()
@@ -34,7 +35,7 @@
             </isc_button>
 
             <isc_button name="defaults">
-				<anchored><left parent="button_bar" offset="10" /></anchored>
+				<anchored position="aboveleft" />
                 <state textres="ISC_button_label_defaults" />
                 <script>
                     function onButtonPress()
@@ -44,7 +45,7 @@
             </isc_button>
 
 			<subwindow name="immskill_combined_select">
-				<anchored to="mainframe" position="over" offset="5,5,5,5" />
+				<anchored to="mainframe" position="over" offset="-5,-5,-5,-5" />
 				<class>immskill_combined_data</class>
 				<activate />
 				<fastinit />
@@ -54,12 +55,14 @@
 				<target>immskill_combined_select</target>
 			</scrollbar>
 
+			<resize_utilitybox />
+			<close_utilitybox />
 		</sheetdata>
 	</windowclass>
 
 <!--#########################################################################-->
 	<windowclass name="immskill_combined_data">
-		<margins control="0,0,0,2" />
+		<margins control="0,0,0,0" />
 		<sheetdata>
 			<list_text name="immskill_dbskill_select">
 				<anchored position="insidetop" />
@@ -81,7 +84,7 @@
 		<margins control="0,0,0,2" />
 		<sheetdata>
 			<isc_checkbox name="immersive">
-				<anchored>
+				<anchored to="" >
 					<top />
 					<left />
 					<size height="20" width="20" />
