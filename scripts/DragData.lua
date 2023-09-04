@@ -22,7 +22,7 @@
 --    metadata: Table. Metadata associated with this slot.
 --    custom: Object. Custom LUA variable associated with this slot. This information will not be saved for drag objects placed on hot key bar.
 
-__DEBUG__ = true
+__DEBUG__ = false
 function dbg(...) if __DEBUG__ then print("[DragData]:"..unpack(arg)) end end
 
 dd = {}
